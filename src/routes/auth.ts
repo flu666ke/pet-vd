@@ -6,8 +6,8 @@ const router = new Router()
 
 router.post('/signup', authController.signup)
 
-// router.post("/account-activation", accountActivation);
-// router.post("/signin", userSigninValidator, runValidation, signin);
+router.post('/account-activation', authController.accountActivation)
+router.post('/signin', authController.signin)
 
 // // forgot reset password
 // router.put(

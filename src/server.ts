@@ -1,4 +1,4 @@
-import Koa from 'koa'
+import Koa, { DefaultState, DefaultContext } from 'koa'
 import bodyParser from 'koa-bodyparser'
 import cors from 'koa2-cors'
 import logger from 'koa-logger'
@@ -13,6 +13,9 @@ dotenv.config()
 const startServer = (config: IConfig) => {
   const app = new Koa()
 
+  DB.instance
+  app.context.db = DB
+
   app.use(bodyParser())
   app.use(cors({ origin: '*' }))
   app.use(logger())
@@ -26,9 +29,6 @@ const startServer = (config: IConfig) => {
     .on('error', err => {
       console.error(err)
     })
-
-  DB.instance
-  app.context.db = DB
 }
 
 export default startServer
