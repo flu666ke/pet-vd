@@ -1,9 +1,9 @@
+import { Context } from 'koa'
 import nodemailer from 'nodemailer'
 import bcrypt from 'bcrypt'
 import { format } from 'date-fns'
 import { v4 as uuidv4 } from 'uuid'
 import { User } from '../models/user'
-import { Context } from 'koa'
 
 export default class AuthController {
   async signup(ctx: Context) {
@@ -12,6 +12,7 @@ export default class AuthController {
     const selectEmail = `SELECT email FROM users WHERE email = '${email}'`
     const user = await ctx.app.context.db.runQuery(selectEmail)
 
+    //TODO: Shows the page confirm email
     if (user) ctx.throw(400, 'email is taken')
 
     const salt = await bcrypt.genSalt(parseInt(process.env.SALT || '7'))
@@ -57,7 +58,10 @@ export default class AuthController {
 
     const expiresCookie = date
 
-    ctx.cookies.set('userId', email, { expires: expiresCookie })
+    console.log({ expiresCookie })
+    ctx.cookies.set('email', email, { expires: expiresCookie })
+
+    console.log('here?')
     ctx.body = {
       message: `Email has been sent to ${email}. Follow the instruction to activate your account`
     }
@@ -65,30 +69,24 @@ export default class AuthController {
 
   async accountActivation(ctx: Context) {
     const { activationId } = ctx.request.body
-    const userId = ctx.cookies.get('userId')
+    const email = ctx.cookies.get('email')
 
-    console.log({ userId })
+    console.log({ email })
 
     try {
-      const selectActivation = `SELECT * FROM activations WHERE uuid = '${activationId}' AND userId = '${userId}'`
+      const selectActivation = `SELECT * FROM activations WHERE uuid = '${activationId}'`
 
       const activation = await ctx.app.context.db.runQuery(selectActivation)
 
-      const now = new Date()
+      if (new Date() > activation[0].expiresAt) ctx.throw(401, 'Confirmation time is expired.')
 
-      const isActivationExpire = now > activation[0].expiresAt
-
-      if (isActivationExpire) ctx.throw(401, 'expires')
-
-      const emailVerifyAt = format(now, 'yyyy-MM-dd HH:mm:ss')
+      const emailVerifyAt = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
 
       const updateUser = `UPDATE users SET emailVerifiedAt = '${emailVerifyAt}' WHERE id = ${activation[0].userId}`
       await ctx.app.context.db.runQuery(updateUser)
 
       const deleteActivation = `DELETE FROM activations WHERE userId = ${activation[0].userId}`
       await ctx.app.context.db.runQuery(deleteActivation)
-
-      console.log({ isActivationExpire })
 
       ctx.body = {
         message: `Registration success`
@@ -102,11 +100,11 @@ export default class AuthController {
     const { email, password } = <User>ctx.request.body
     console.log({ password })
     try {
-      const dbQuery = `SELECT email, password FROM profiles WHERE email = '${email}'`
+      const selectUser = `SELECT email, password FROM users WHERE email = '${email}'`
 
-      const user = await ctx.app.context.db.runQuery(dbQuery)
+      const user = await ctx.app.context.db.runQuery(selectUser)
 
-      if (!user) throw new Error('User with that email does not exists. Please signup')
+      if (!user) ctx.throw(401, 'User with that email does not exists. Please signup')
 
       if (!bcrypt.compareSync(password, user[0].password)) ctx.throw(401, 'Email and password do not match')
 

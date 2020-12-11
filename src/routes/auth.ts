@@ -1,10 +1,12 @@
 import Router from 'koa-router'
 
 import { authController } from '../controllers/auth'
+import { checkCookies } from '../middlewares/checkCookies'
+import { validateInputData } from '../validators/auth/auth'
 
 const router = new Router()
 
-router.post('/signup', authController.signup)
+router.post('/signup', checkCookies, validateInputData, authController.signup)
 
 router.post('/account-activation', authController.accountActivation)
 router.post('/signin', authController.signin)

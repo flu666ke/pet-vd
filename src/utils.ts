@@ -6,10 +6,10 @@ export const getFormattedDate = (date: Date): string => {
   return format(date, 'yyyy-MM-dd HH:mm:ss')
 }
 
-export const getExpirationDate = (expirationTime: number): number => {
+export const getExpirationDate = (hours: number): number => {
   const date = new Date()
 
-  return date.setHours(date.getHours() + expirationTime)
+  return date.setHours(date.getHours() + hours)
 }
 
 export const getHashedPassword = async (password: string): Promise<string> => {
