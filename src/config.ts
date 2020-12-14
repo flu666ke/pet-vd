@@ -1,7 +1,10 @@
+import dotenv from 'dotenv'
+dotenv.config()
 export interface IConfig {
   port: number
   db: IDB
   salt: string
+  clientURL: string
   activationEmailFrom: string
   activationEmailPassword: string
 }
@@ -22,6 +25,7 @@ export const config: IConfig = {
     database: process.env.DB_DATABASE || ''
   },
   salt: process.env.SALT || '',
+  clientURL: process.env.CLIENT_URL || '',
   activationEmailFrom: process.env.ACTIVATION_EMAIL_FROM || '',
   activationEmailPassword: process.env.ACTIVATION_EMAIL_PASSWORD || ''
 }
