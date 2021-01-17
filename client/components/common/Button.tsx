@@ -56,9 +56,10 @@ interface ButtonProps {
   size: "normal" | "small"
   loading: boolean
   children: any
-  disabled: boolean
+  disabled?: boolean
   fullWidth?: boolean
-  type: "button" | "reset" | "submit"
+  type?: "button" | "reset" | "submit"
+  onClick?: () => void
 }
 
 export default function Button({ color, size, loading, children, disabled, ...restProps }: ButtonProps) {

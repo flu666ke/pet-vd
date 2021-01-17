@@ -18,3 +18,10 @@ export const SignupSchema = Yup.object().shape({
 export const ForgotPasswordSchema = Yup.object().shape({
   email: Yup.string().email('The email is incorrect').required('This field is required')
 })
+
+export const RestorePasswordSchema = Yup.object().shape({
+  password: Yup.string().min(6, 'required, min 6 symbols').required('required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('This field is required')
+})

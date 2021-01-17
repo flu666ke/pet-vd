@@ -40,12 +40,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AuthHeader({ logoUrl, menuLinks }: any) {
+
+export default function AuthHeader({ menuLinks }: any) {
   const classes = useStyles();
-
-
-  // <Link href={`/post/[id]`} as={`/post/${post.id}`}><a>{post.vehicle}</a></Link>
-
 
   const linksList = menuLinks.map((link: any) => (
     <li key={link.to} className={classes.linksItem}>

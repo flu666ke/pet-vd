@@ -8,6 +8,8 @@ import PasswordTextField from '../components/common/PasswordTextField'
 import { MainLayout } from '../components/MainLayout';
 import { SignInSchema } from '../services/validationSchemas';
 import { LoginData } from '../interfaces';
+import { useState } from 'react';
+import API from '../services/api';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -41,12 +43,35 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function SignIn() {
   const classes = useStyles();
 
-  const handleSubmit = (value: LoginData) => {
+
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState('')
+  const [message, setMessage] = useState('')
+
+  const handleSubmit = async (value: LoginData) => {
     console.log({ value })
+
+
+    try {
+      setLoading(true)
+
+      const response = await API.signIn(value)
+      console.log({ response })
+
+      setMessage(response.message)
+      setErrors('')
+
+    } catch (error) {
+      setErrors(error.response.data)
+
+      console.log({ errors })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <MainLayout title={'Login'}>
+    <MainLayout title='Login' message={message} errors={errors}>
       <div className={classes.root}>
 
         <Typography variant="h2" className={classes.title}>
@@ -88,7 +113,7 @@ export default function SignIn() {
                   fullWidth
                   size="normal"
                   color="secondary"
-                  loading={false}
+                  loading={loading}
                 >
                   Login
               </Button>

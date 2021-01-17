@@ -20,18 +20,8 @@ const startServer = (config: IConfig) => {
     app.context.db = DB
 
     app.use(bodyParser())
-    app.use(cors({ origin: '*' }))
+    app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
     app.use(logger())
-
-    router.get('/vehicles', (ctx: Context) => {
-      const owners = [
-        { id: 1, vehicle: 'car', ownerName: 'bruno' },
-        { id: 2, vehicle: 'bike', ownerName: 'john' },
-        { id: 3, vehicle: 'airplane', ownerName: 'brunmicko' }
-      ]
-
-      ctx.body = owners
-    })
 
     app.use(router.routes())
 

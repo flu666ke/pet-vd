@@ -55,16 +55,16 @@ class DB {
       console.log('Online Database')
 
       DB.runQuery(
-        'CREATE TABLE IF NOT EXISTS `users`(`id` int AUTO_INCREMENT, `email` VARCHAR(255), `password` VARCHAR(60), PRIMARY KEY(id), `emailVerifiedAt` DATETIME)'
+        'CREATE TABLE IF NOT EXISTS `users`(`id` int AUTO_INCREMENT, `firstName` VARCHAR(60), `lastName` VARCHAR(60), `email` VARCHAR(255), `password` VARCHAR(60), PRIMARY KEY(id), `emailVerifiedAt` DATETIME)'
       )
 
       DB.runQuery(
-        'CREATE TABLE IF NOT EXISTS `activations`(`userId` INT(10), `uuid` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
+        'CREATE TABLE IF NOT EXISTS `activations`(`userId` INT(10), `activationId` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
       )
 
-      // DB.runQuery(
-      //   'CREATE TABLE IF NOT EXISTS `activations`(`userId` INT(10), `uuid` VARCHAR(60), `expiresAt` TIMESTAMP)'
-      // )
+      DB.runQuery(
+        'CREATE TABLE IF NOT EXISTS `accessTokens`(`userId` INT(10), `accessToken` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
+      )
     })
   }
 }
