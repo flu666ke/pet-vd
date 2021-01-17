@@ -25,7 +25,7 @@ export default class HelperService {
     return bcrypt.hashSync(password, salt)
   }
 
-  isPasswordCompared(password: string, hasshedPassword: string): boolean {
+  comparePassword(password: string, hasshedPassword: string): boolean {
     return bcrypt.compareSync(password, hasshedPassword)
   }
 
@@ -43,7 +43,7 @@ export default class HelperService {
       to: email,
       subject: 'Account activation link',
       text: `<h1>Please use the following link to activate your account</h1>
-          <p>${this.config.clientURL}/auth/activate/${uuid}</p>
+          <p><a href="${this.config.clientURL}/auth-activate/${uuid}">${this.config.clientURL}/auth-activate/${uuid}</a></p>
           <hr />
           <p>This email may contain sensitive information</p>
           <p>${this.config.clientURL}</p>

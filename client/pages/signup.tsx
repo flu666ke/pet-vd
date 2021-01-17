@@ -1,4 +1,4 @@
-
+import { useState } from 'react'
 // import Link from 'next/link'
 import { Formik, Form } from "formik";
 import { FormControl, makeStyles, Theme, Typography } from "@material-ui/core";
@@ -8,6 +8,7 @@ import PasswordTextField from '../components/common/PasswordTextField'
 import { MainLayout } from '../components/MainLayout';
 import { SignupSchema } from '../services/validationSchemas';
 import { RegisterData } from "../interfaces";
+import API from "../services/api";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -32,23 +33,42 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function SignUp({ signup, isLoading }: any) {
+export default function SignUp() {
   const classes = useStyles();
 
-  const handleSubmit = (values: RegisterData) => {
-    console.log({ values });
-    signup(values);
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState('')
+  const [message, setMessage] = useState('')
+
+  const handleSubmit = async (values: RegisterData) => {
+
+    try {
+      setLoading(true)
+
+      const response = await API.signUp(values)
+      console.log({ response })
+
+      setMessage(response.message)
+      setErrors('')
+
+    } catch (error) {
+      setErrors(error.response.data)
+
+      console.log({ errors })
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
-    <MainLayout title={'Registration'}>
+    <MainLayout title='Registration' message={message} errors={errors}>
       <div className={classes.root}>
         <Typography component='h2' variant='h2' className={classes.title}>
           Registration
         </Typography>
         <div>
           <Formik
-            // enableReinitialize
+            enableReinitialize
             onSubmit={handleSubmit}
             validationSchema={SignupSchema}
             // initialErrors={errors}
@@ -57,6 +77,7 @@ export default function SignUp({ signup, isLoading }: any) {
               lastName: "",
               email: "",
               password: "",
+              confirmPassword: "",
             }}
           >
             {({ isValid }) => (
@@ -89,6 +110,13 @@ export default function SignUp({ signup, isLoading }: any) {
                     name='password'
                   />
                 </FormControl>
+                <FormControl className={classes.control} fullWidth>
+                  <PasswordTextField
+                    placeholder="Enter Password Again"
+                    label="Confirm Password"
+                    name="confirmPassword"
+                  />
+                </FormControl>
                 <FormControl fullWidth className={classes.button}>
                   <Button
                     fullWidth
@@ -96,7 +124,7 @@ export default function SignUp({ signup, isLoading }: any) {
                     color="secondary"
                     size="normal"
                     type="submit"
-                    loading={false}
+                    loading={loading}
                   >
                     Register
                   </Button>

@@ -1,10 +1,13 @@
 import Head from 'next/head'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'
 import AuthHeader from './AuthHeader';
+import API from '../services/api';
+import MessageSnackBar from './MessageSnackBar';
 
 const headerMenuLinks = [
   {
-    to: '/',
+    to: '/home',
     text: 'home'
   },
   {
@@ -17,7 +20,40 @@ const headerMenuLinks = [
   }
 ];
 
-export function MainLayout({ children, title = 'VD' }: any) {
+export function MainLayout({ children, title = 'VD', message, errors }: any) {
+  const router = useRouter()
+
+  const [loading, setLoading] = useState(false)
+
+  // useEffect(() => {
+
+  //   const load = async () => {
+
+  //     try {
+  //       setLoading(true)
+  //       const response = await API.getHomePage()
+  //       console.log({ response })
+  //       if (response && response.user) {
+  //         router.push('/')
+  //       }
+
+  //     } catch (error) {
+  //       console.log(error)
+
+  //       router.push('/signin')
+
+  //     } finally {
+  //       setLoading(false)
+  //     }
+
+
+  //   }
+
+  //   load()
+
+  // }, []);
+
+
   return (
     <>
       <Head>
@@ -29,6 +65,9 @@ export function MainLayout({ children, title = 'VD' }: any) {
 
       <AuthHeader menuLinks={headerMenuLinks} />
       {/* <nav>NAVIGATION</nav> */}
+
+      {message && <MessageSnackBar text={message} type='success' />}
+      {errors && <MessageSnackBar text={errors} type='error' />}
       <main>
         {children}
       </main>
