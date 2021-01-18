@@ -5,9 +5,16 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import NextNprogress from 'nextjs-progressbar'
 import theme from './theme';
+import { NextPage } from 'next';
+import { RootStoreProvider } from '../providers/RootStoreProvider';
 
-export default function MyApp(props: any) {
-  const { Component, pageProps } = props;
+export default function MyApp({
+  Component,
+  pageProps,
+}: {
+  Component: NextPage;
+  pageProps: any;
+}) {
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -37,7 +44,9 @@ export default function MyApp(props: any) {
           stopDelayMs={200}
           height={3}
         />
-        <Component {...pageProps} />
+        <RootStoreProvider hydrationData={pageProps.hydrationData}>
+          <Component {...pageProps} />
+        </RootStoreProvider>
       </ThemeProvider>
     </React.Fragment>
   );

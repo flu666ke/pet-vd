@@ -1,13 +1,13 @@
+import { observer } from 'mobx-react-lite';
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'
 import AuthHeader from './AuthHeader';
-import API from '../services/api';
 import MessageSnackBar from './MessageSnackBar';
+import { useErrorStore } from "../providers/RootStoreProvider";
 
 const headerMenuLinks = [
   {
-    to: '/home',
+    to: '/',
     text: 'home'
   },
   {
@@ -20,39 +20,11 @@ const headerMenuLinks = [
   }
 ];
 
-export function MainLayout({ children, title = 'VD', message, errors }: any) {
-  const router = useRouter()
+export const MainLayout = observer(function MainLayout({ children, title = 'VD', message = '' }: any) {
 
-  const [loading, setLoading] = useState(false)
+  const store = useErrorStore();
 
-  // useEffect(() => {
-
-  //   const load = async () => {
-
-  //     try {
-  //       setLoading(true)
-  //       const response = await API.getHomePage()
-  //       console.log({ response })
-  //       if (response && response.user) {
-  //         router.push('/')
-  //       }
-
-  //     } catch (error) {
-  //       console.log(error)
-
-  //       router.push('/signin')
-
-  //     } finally {
-  //       setLoading(false)
-  //     }
-
-
-  //   }
-
-  //   load()
-
-  // }, []);
-
+  console.log({ store })
 
   return (
     <>
@@ -66,11 +38,11 @@ export function MainLayout({ children, title = 'VD', message, errors }: any) {
       <AuthHeader menuLinks={headerMenuLinks} />
       {/* <nav>NAVIGATION</nav> */}
 
-      {message && <MessageSnackBar text={message} type='success' />}
-      {errors && <MessageSnackBar text={errors} type='error' />}
+      {message && <MessageSnackBar text={message} type='success' onClear={store.clearMessage} />}
+      {store.error && <MessageSnackBar text={store.error} type='error' onClear={store.clearMessage} />}
       <main>
         {children}
       </main>
     </>
   )
-}
+})
