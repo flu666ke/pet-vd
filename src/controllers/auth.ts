@@ -13,9 +13,14 @@ export default class AuthController {
 
   async getUser(ctx: Context) {
     try {
-      const email = ctx.cookies.get('email')
+      const accessToken = ctx.cookies.get('accessToken')
 
-      const selectUser = `SELECT * FROM users WHERE email = '${email}'`
+      const selectToken = `SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}'`
+
+      const token = await ctx.app.context.db.runQuery(selectToken)
+
+      const selectUser = `SELECT * FROM users WHERE id = '${token[0].userId}'`
+
       const user = await ctx.app.context.db.runQuery(selectUser)
 
       ctx.body = {

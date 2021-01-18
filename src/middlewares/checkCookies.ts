@@ -2,9 +2,11 @@ import { Context, Next } from 'koa'
 
 export const checkCookies = async (ctx: Context, next: Next) => {
   try {
-    const email = ctx.cookies.get('email')
+    const accessToken = ctx.cookies.get('accessToken')
 
-    if (email) {
+    console.log({ accessToken })
+
+    if (accessToken) {
       await next()
     } else {
       ctx.throw(401, 'no cookies')

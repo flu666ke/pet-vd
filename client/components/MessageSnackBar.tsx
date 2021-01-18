@@ -38,12 +38,13 @@ const useStyles = makeStyles(theme => ({
 interface MessageSnackBarProps {
   text: string
   type: string
+  onClear: () => void
 }
 
 export default function MessageSnackBar(props: MessageSnackBarProps) {
   const classes = useStyles();
 
-  console.log(props)
+  const { text, type, onClear } = props
 
   const handleClose = (_: any, reason: any) => {
     console.log({ _, reason })
@@ -51,13 +52,13 @@ export default function MessageSnackBar(props: MessageSnackBarProps) {
       return;
     }
 
-    // onClear();
+    onClear();
   };
 
   if (!props) return null;
 
-  const isOpen = !!props.text;
-  const Icon = variantIcon[props.type];
+  const isOpen = !!text;
+  const Icon = variantIcon[type];
 
   return (
     <div>
@@ -71,11 +72,11 @@ export default function MessageSnackBar(props: MessageSnackBarProps) {
         onClose={handleClose}
       >
         <SnackbarContent
-          className={clsx(classes[props.type])}
+          className={clsx(classes[type])}
           message={
             <span className={classes.message}>
               <Icon className={classes.icon} />
-              {props.text}
+              {text}
             </span>
           }
           action={[
