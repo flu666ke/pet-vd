@@ -1,45 +1,56 @@
+import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
-import { useEffect } from 'react'
-import HomePage from "../components/HomePage";
+import { useRouter } from 'next/router'
+import { useEffect } from "react";
+import { HomePage } from "../components/HomePage";
 import { MainLayout } from '../components/MainLayout';
-import API from "../services/api";
+import { useErrorStore } from "../providers/RootStoreProvider";
 
-export default function Index() {
+const Index = observer(function Index() {
 
+  const router = useRouter()
+  const store = useErrorStore();
 
   useEffect(() => {
-    const load = async () => {
-      const response = await API.getHomePage()
-      console.log({ response })
+    if (store.error && store.error === 'Unauthorized') {
+      router.push('/signin')
     }
-    load()
   }, [])
 
   return <MainLayout title='Home Page'>
     <HomePage />
   </MainLayout>
-}
+})
+
+export default Index
 
 export const getServerSideProps: GetServerSideProps = async function getServerSideProps(
   ctx
 ) {
-  // let start = 0;
 
-  // console.log({ ctx })
-  // const cookies = ctx.req.headers.cookie
+  let error = null
+  let profile = null
 
-  // console.log({ cookies })
-  // if (ctx.query.start && typeof ctx.query.start === "string") {
-  //   start = Number(ctx.query.start);
-  // }
+  const cookie = ctx.req.headers.cookie
+  console.log({ cookie })
 
-  // const response = await fetch(`http://localhost:5000`)
+  const response = await fetch(`http://localhost:5000`, { headers: { cookie: cookie! } })
+
+  if (response.status === 200) {
+    const { user } = await response.json()
+    profile = {
+      firstName: user.firstName,
+      lastName: user.lastName
+    }
+  } else if (response.status === 401) {
+    error = response.statusText
+  }
 
   return {
     props: {
       hydrationData: {
-        // error: response.statusText
-        error: ''
+        error: error,
+        user: profile
       },
     },
   };

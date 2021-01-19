@@ -33,13 +33,11 @@ const useStyles = makeStyles(theme => ({
     }
   },
   link: {
-    // ...theme.typography.menu,
     color: theme.palette.primary.light,
     textTransform: 'uppercase',
     textDecoration: 'none'
   }
 }));
-
 
 export default function AuthHeader({ menuLinks }: any) {
   const classes = useStyles();

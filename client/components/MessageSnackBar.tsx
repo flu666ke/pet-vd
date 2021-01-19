@@ -8,6 +8,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import CheckIcon from '@material-ui/icons/CheckCircle';
 import { makeStyles } from '@material-ui/core/styles';
 import { messagesTypes } from '../constants';
+import { SyntheticEvent } from 'react';
 
 const variantIcon = {
   [messagesTypes.success]: CheckIcon,
@@ -46,8 +47,7 @@ export default function MessageSnackBar(props: MessageSnackBarProps) {
 
   const { text, type, onClear } = props
 
-  const handleClose = (_: any, reason: any) => {
-    console.log({ _, reason })
+  const handleClose = (_: SyntheticEvent<any, Event>, reason: any) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -82,9 +82,8 @@ export default function MessageSnackBar(props: MessageSnackBarProps) {
           action={[
             <IconButton
               key="close"
-              aria-label="close"
               color="inherit"
-            // onClick={handleClose}
+              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleClose(event, MouseEvent)}
             >
               <CloseIcon className={classes.closeIcon} />
             </IconButton>

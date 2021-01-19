@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router'
 import { Formik, Form } from 'formik';
 import { makeStyles, Theme } from '@material-ui/core';
 import { Typography, FormControl } from '@material-ui/core';
@@ -42,15 +43,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
+  const router = useRouter()
 
-
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false)
   const [errors, setErrors] = useState('')
   const [message, setMessage] = useState('')
 
   const handleSubmit = async (value: LoginData) => {
     console.log({ value })
-
 
     try {
       setLoading(true)
@@ -60,7 +60,7 @@ export default function SignIn() {
 
       setMessage(response.message)
       setErrors('')
-
+      router.push('/')
     } catch (error) {
       setErrors(error.response.data)
 
@@ -71,6 +71,7 @@ export default function SignIn() {
   }
 
   return (
+
     <MainLayout title='Login' message={message} errors={errors}>
       <div className={classes.root}>
 
@@ -113,7 +114,7 @@ export default function SignIn() {
                   fullWidth
                   size="normal"
                   color="secondary"
-                  loading={loading}
+                  loading={isLoading}
                 >
                   Login
               </Button>

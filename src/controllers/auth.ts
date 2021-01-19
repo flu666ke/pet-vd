@@ -15,12 +15,7 @@ export default class AuthController {
     try {
       const accessToken = ctx.cookies.get('accessToken')
 
-      const selectToken = `SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}'`
-
-      const token = await ctx.app.context.db.runQuery(selectToken)
-
-      const selectUser = `SELECT * FROM users WHERE id = '${token[0].userId}'`
-
+      const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
       const user = await ctx.app.context.db.runQuery(selectUser)
 
       ctx.body = {
@@ -132,7 +127,7 @@ export default class AuthController {
       this.helperService.sendEmail(email!, uuid)
 
       const expiresCookie = currentDate
-      ctx.cookies.set('email', email, { expires: expiresCookie })
+      ctx.cookies.set('accessToken', uuid, { expires: expiresCookie })
 
       ctx.body = {
         message: `Email has been sent to ${email}. Follow the instruction to activate your account`
@@ -159,12 +154,13 @@ export default class AuthController {
 
       const currentDate = new Date()
       currentDate.setHours(currentDate.getHours() + 1)
-
+      const uuid = uuidv4()
       const expiresCookie = currentDate
-      ctx.cookies.set('email', email, { expires: expiresCookie })
+
+      ctx.cookies.set('accessToken', uuid, { expires: expiresCookie })
 
       ctx.body = {
-        message: user[0].password
+        message: 'Login successful'
       }
     } catch (error) {
       ctx.status = error.status || 500
