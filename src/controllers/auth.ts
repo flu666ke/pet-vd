@@ -74,6 +74,8 @@ export default class AuthController {
 
     const deleteActivation = `DELETE FROM activations WHERE userId = ${activation[0].userId}`
     await DB.runQuery(deleteActivation)
+
+    return { uuid, expirationDate }
   }
 
   async getActivationLink(email: string, DB: any) {

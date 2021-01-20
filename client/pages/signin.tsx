@@ -12,6 +12,7 @@ import { LoginData } from '../interfaces';
 import React, { useState } from 'react';
 import API from '../services/api';
 import ActivationLinkExpired from '../components/ActivationLink';
+import { useErrorStore } from '../providers/RootStoreProvider';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const router = useRouter()
+  const store = useErrorStore()
 
   const [isLoading, setLoading] = useState(false)
   const [isActivationLinkShow, setIsActivationLinkShow] = useState(false)
@@ -53,7 +55,7 @@ export default function SignIn() {
   const [message, setMessage] = useState('')
 
   const handleSubmit = async (value: LoginData) => {
-    console.log({ value })
+
 
     setEmail(value.email)
 
@@ -67,11 +69,10 @@ export default function SignIn() {
       setErrors('')
       router.push('/')
     } catch (error) {
-
-      // console.log('SignIn --- error--- ', error)
+      store.setError(error.response.data.error.message)
       setErrors(error.response.data)
       setIsActivationLinkShow(true)
-      console.log({ errors })
+
     } finally {
       setLoading(false)
     }
@@ -79,7 +80,7 @@ export default function SignIn() {
 
   return (
 
-    <MainLayout title='Login' message={message} errors={errors}>
+    <MainLayout title='Login'>
       <div className={classes.root}>
 
         <Typography variant="h2" className={classes.title}>

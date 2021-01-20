@@ -19,14 +19,14 @@ const theme = createMuiTheme({
       default: '#2F4454',
     },
   },
-  container: {
-    auth: {
-      maxWidth: 630,
-      width: '100%',
-      margin: '0 auto',
-      padding: '55px 15px 25px'
-    }
-  }
+  // container: {
+  //   auth: {
+  //     maxWidth: 630,
+  //     width: '100%',
+  //     margin: '0 auto',
+  //     padding: '55px 15px 25px'
+  //   }
+  // }
 });
 
 export default theme;

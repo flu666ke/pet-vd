@@ -51,10 +51,7 @@ export default function authRoutes(app: Koa, authController: AuthController, hel
     const { activationId } = ctx.request.body
 
     try {
-      await authController.accountActivation(activationId, DB)
-
-      const uuid = uuidv4()
-      const expirationDate = helperService.getExpirationDate(1)
+      const { uuid, expirationDate } = await authController.accountActivation(activationId, DB)
 
       ctx.cookies.set('accessToken', uuid, { expires: new Date(expirationDate) })
 

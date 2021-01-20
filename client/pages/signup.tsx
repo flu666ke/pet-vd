@@ -9,6 +9,7 @@ import { MainLayout } from '../components/MainLayout';
 import { SignupSchema } from '../services/validationSchemas';
 import { RegisterData } from "../interfaces";
 import API from "../services/api";
+import { useErrorStore } from '../providers/RootStoreProvider';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -36,6 +37,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
+  const store = useErrorStore()
+
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState('')
   const [message, setMessage] = useState('')
@@ -52,6 +55,12 @@ export default function SignUp() {
       setErrors('')
 
     } catch (error) {
+
+
+      console.log({ error })
+
+      store.setError(error.response.data.error.message)
+
       setErrors(error.response.data)
 
       console.log({ errors })
@@ -61,7 +70,7 @@ export default function SignUp() {
   };
 
   return (
-    <MainLayout title='Registration' message={message} errors={errors}>
+    <MainLayout title='Registration'>
       <div className={classes.root}>
         <Typography component='h2' variant='h2' className={classes.title}>
           Registration
@@ -121,14 +130,13 @@ export default function SignUp() {
                   <Button
                     fullWidth
                     disabled={!isValid}
-                    color="secondary"
+                    color="primary"
                     size="normal"
                     type="submit"
                     loading={loading}
                   >
                     Register
                   </Button>
-
                 </FormControl>
               </Form>
             )}
