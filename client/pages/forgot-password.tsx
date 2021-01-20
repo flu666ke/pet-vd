@@ -1,8 +1,10 @@
 import { makeStyles, FormControl, Typography } from "@material-ui/core";
 import { Formik, Form } from "formik";
+import { useState } from "react";
 import Button from "../components/common/Button";
 import TextField from '../components/common/TextField'
 import { MainLayout } from "../components/MainLayout";
+import API from "../services/api";
 import { ForgotPasswordSchema } from "../services/validationSchemas";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,11 +27,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ForgotPassword({ errors, isLoading, message }: any) {
+export default function ForgotPassword() {
   const classes = useStyles();
 
-  const handleSubmit = (values: any) => {
-    console.log(values);
+  const [isLoading, setLoading] = useState(false)
+
+  const [errors, setErrors] = useState('')
+  const [message, setMessage] = useState('')
+
+  const handleSubmit = async (value: any) => {
+
+    console.log({ value })
+
+    try {
+      setLoading(true)
+
+      const response = await API.forgotPassword(value.email)
+      console.log({ response })
+
+      setMessage(response.message)
+      setErrors('')
+      // router.push('/')
+    } catch (error) {
+
+
+      setErrors(error.response.data)
+
+      console.log({ errors })
+    } finally {
+      setLoading(false)
+    }
 
   };
 
@@ -45,7 +72,7 @@ export default function ForgotPassword({ errors, isLoading, message }: any) {
           initialValues={{
             email: "",
           }}
-          initialErrors={errors}
+          // initialErrors={errors}
           validationSchema={ForgotPasswordSchema}
         >
           {({ isValid }) => (
@@ -56,7 +83,7 @@ export default function ForgotPassword({ errors, isLoading, message }: any) {
               <div className={classes.button}>
                 <Button
                   type='submit'
-                  loading={false}
+                  loading={isLoading}
                   size="normal"
                   color="secondary"
                   fullWidth

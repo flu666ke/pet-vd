@@ -9,8 +9,9 @@ import PasswordTextField from '../components/common/PasswordTextField'
 import { MainLayout } from '../components/MainLayout';
 import { SignInSchema } from '../services/validationSchemas';
 import { LoginData } from '../interfaces';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import API from '../services/api';
+import ActivationLinkExpired from '../components/ActivationLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -46,11 +47,15 @@ export default function SignIn() {
   const router = useRouter()
 
   const [isLoading, setLoading] = useState(false)
+  const [isActivationLinkShow, setIsActivationLinkShow] = useState(false)
+  const [email, setEmail] = useState('')
   const [errors, setErrors] = useState('')
   const [message, setMessage] = useState('')
 
   const handleSubmit = async (value: LoginData) => {
     console.log({ value })
+
+    setEmail(value.email)
 
     try {
       setLoading(true)
@@ -62,8 +67,10 @@ export default function SignIn() {
       setErrors('')
       router.push('/')
     } catch (error) {
-      setErrors(error.response.data)
 
+      // console.log('SignIn --- error--- ', error)
+      setErrors(error.response.data)
+      setIsActivationLinkShow(true)
       console.log({ errors })
     } finally {
       setLoading(false)
@@ -127,6 +134,8 @@ export default function SignIn() {
             </Form>
           )}
         </Formik>
+
+        {isActivationLinkShow && <ActivationLinkExpired email={email} />}
       </div>
     </MainLayout>
   );

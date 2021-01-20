@@ -38,13 +38,23 @@ const API = {
 
     return data
   },
-  async getActivationLink() {
-    const { data } = await instance.get('activation-link')
+  async getActivationLink(email: string) {
+    const { data } = await instance.post('activation-link', { email })
 
     return data
   },
   async signIn(body: LoginData) {
     const { data } = await instance.post('signin', body)
+
+    return data
+  },
+  async forgotPassword(email: string) {
+    const { data } = await instance.post('forgot-password', { email })
+
+    return data
+  },
+  async restorePassword(body: any) {
+    const { data } = await instance.post('restore-password', body)
 
     return data
   }

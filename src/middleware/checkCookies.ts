@@ -11,9 +11,9 @@ export const checkCookies = async (ctx: Context, next: Next) => {
     } else {
       ctx.throw(401, 'no cookies')
     }
-  } catch (err) {
-    ctx.status = err.status || 500
-    ctx.body = err.message
+  } catch (error) {
+    ctx.status = error.status || 500
+    ctx.body = { error: { message: error.message, status: error.status } }
   }
 }
 

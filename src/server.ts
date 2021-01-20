@@ -5,10 +5,12 @@ import logger from 'koa-logger'
 
 import DB from './db'
 import { IConfig } from './config'
-import HelperService from './helperService'
 import authRoutes from './routes/authRoutes'
 import AuthController from './controllers/auth'
 import Router from 'koa-router'
+import EmailService from './module.email/emailService'
+import ErrorService from './module.error/errorService'
+import HelperService from './module.helper/helperService'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -40,16 +42,25 @@ const startServer = (config: IConfig) => {
 
   // Services
   const services = (() => {
-    const helperService = new HelperService(config)
+    const emailService = new EmailService(config)
+    const errorService = new ErrorService()
+    const helperService = new HelperService()
 
     return {
+      emailService,
+      errorService,
       helperService
     }
   })()
 
   // Controllers
   const controllers = (() => {
-    const authController = new AuthController(services.helperService)
+    const authController = new AuthController(
+      services.emailService,
+      services.errorService,
+      services.helperService,
+      config
+    )
 
     return {
       authController
@@ -58,7 +69,7 @@ const startServer = (config: IConfig) => {
 
   // Routes
   const routes = (() => {
-    const auth = authRoutes(core.app, controllers.authController)
+    const auth = authRoutes(core.app, controllers.authController, services.helperService)
     return {
       auth
     }

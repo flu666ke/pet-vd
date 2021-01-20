@@ -65,8 +65,14 @@ class DB {
       DB.runQuery(
         'CREATE TABLE IF NOT EXISTS `accessTokens`(`userId` INT(10), `accessToken` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
       )
+
+      DB.runQuery(
+        'CREATE TABLE IF NOT EXISTS `restorePasswords`(`userId` INT(10), `uuid` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
+      )
     })
   }
 }
 
 export default DB
+
+// export type DataBase = typeof DB

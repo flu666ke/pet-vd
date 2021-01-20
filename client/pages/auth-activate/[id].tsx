@@ -17,8 +17,6 @@ export default function AuthActivation() {
   const classes = useStyles();
   const router = useRouter()
 
-
-
   useEffect(() => {
     if (router.query.id) {
       const load = async () => {
@@ -28,12 +26,12 @@ export default function AuthActivation() {
 
           console.log({ response })
 
-          if (response && response.success) {
+          if (response) {
             router.push('/')
           }
         } catch (error) {
-
-          router.push('/auth-activate/link-expired')
+          console.log({ error })
+          router.push('/signin')
         }
 
 

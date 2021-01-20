@@ -1,180 +1,153 @@
 import { Context } from 'koa'
-import { UpdatePassword } from 'src/models/updatePassword'
 import { v4 as uuidv4 } from 'uuid'
-import HelperService from '../helperService'
+import bcrypt from 'bcrypt'
+import { UpdatePassword } from 'src/models/updatePassword'
 import { User } from '../models/user'
+import { IConfig } from 'src/config'
+import EmailService from 'src/module.email/emailService'
+import ErrorService from 'src/module.error/errorService'
+import HelperService from 'src/module.helper/helperService'
 
 export default class AuthController {
+  private emailService: EmailService
+  private errorService: ErrorService
   private helperService: HelperService
+  private config: IConfig
 
-  constructor(helperService: HelperService) {
+  constructor(emailService: EmailService, errorService: ErrorService, helperService: HelperService, config: IConfig) {
+    this.emailService = emailService
+    this.errorService = errorService
     this.helperService = helperService
+
+    this.config = config
   }
 
-  async getUser(ctx: Context) {
-    try {
-      const accessToken = ctx.cookies.get('accessToken')
+  async getProfile(accessToken: string, DB: any): Promise<User> {
+    const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
+    const users = await DB.runQuery(selectUser)
+    return users[0]
+  }
 
-      const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
-      const user = await ctx.app.context.db.runQuery(selectUser)
+  async signup({ firstName, lastName, email, password }: User, DB: any) {
+    const selectEmail = `SELECT email FROM users WHERE email = '${email}'`
+    const user = await DB.runQuery(selectEmail)
 
-      ctx.body = {
-        user: user[0]
-      }
-    } catch (error) {
-      ctx.status = error.status || 500
-      ctx.body = error.message
+    if (user) {
+      this.errorService.badRequest('Email is taken.')
     }
+
+    const hashedPassword = await this.getHashedPassword(password)
+    const insertUser = `INSERT INTO users(firstName, lastName, email, password) VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}')`
+    await DB.runQuery(insertUser)
+
+    const uuid = uuidv4()
+
+    const expirationDate = this.helperService.getExpirationDate(1)
+    const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES (LAST_INSERT_ID(), '${uuid}', '${expirationDate}')`
+    await DB.runQuery(insertActivation)
+
+    this.emailService.sendActivationLink(email, uuid)
   }
 
-  async signup(ctx: Context) {
-    const { firstName, lastName, email, password } = <User>ctx.request.body
+  async accountActivation(activationId: string, DB: any) {
+    const selectActivation = `SELECT * FROM activations WHERE activationId = '${activationId}'`
+    const activation = await DB.runQuery(selectActivation)
 
-    try {
-      const selectEmail = `SELECT email FROM users WHERE email = '${email}'`
-      const user = await ctx.app.context.db.runQuery(selectEmail)
-
-      //TODO: Shows the page confirm email
-      if (user) ctx.throw(400, 'email is taken')
-
-      const hashedPassword = await this.helperService.getHashedPassword(password)
-
-      const insertUser = `INSERT INTO users(firstName, lastName, email, password) VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}')`
-      await ctx.app.context.db.runQuery(insertUser)
-
-      const uuid = uuidv4()
-
-      const currentDate = new Date()
-      currentDate.setHours(currentDate.getHours() + 1)
-
-      const expiresAt = this.helperService.getFormattedDate(currentDate)
-
-      const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES (LAST_INSERT_ID(), '${uuid}', '${expiresAt}')`
-      await ctx.app.context.db.runQuery(insertActivation)
-
-      this.helperService.sendEmail(email, uuid)
-
-      // const expiresCookie = currentDate
-      // ctx.cookies.set('email', email, { expires: expiresCookie })
-
-      ctx.body = {
-        message: `Email has been sent to ${email}. Follow the instruction to activate your account`
-      }
-    } catch (error) {
-      ctx.status = error.status || 500
-      ctx.body = error.message
+    if (!activation) {
+      this.errorService.unauthorized('Activation link already used.')
     }
-  }
 
-  async accountActivation(ctx: Context) {
-    const { activationId } = ctx.request.body
-
-    try {
-      const selectActivation = `SELECT * FROM activations WHERE activationId = '${activationId}'`
-      const activation = await ctx.app.context.db.runQuery(selectActivation)
-
-      if (!activation) ctx.throw(401, 'Activation link already used.')
-      if (new Date() > activation[0].expiresAt) ctx.throw(401, 'Confirmation time is expired.')
-
-      const emailVerifiedAt = this.helperService.getFormattedDate(new Date())
-
-      const updateUser = `UPDATE users SET emailVerifiedAt = '${emailVerifiedAt}' WHERE id = ${activation[0].userId}`
-      await ctx.app.context.db.runQuery(updateUser)
-
-      const uuid = uuidv4()
-      const currentDate = new Date()
-      currentDate.setHours(currentDate.getHours() + 1)
-
-      const expiresAt = this.helperService.getFormattedDate(currentDate)
-
-      const insertAccessToken = `INSERT INTO accessTokens(userId, accessToken, expiresAt) VALUES ('${activation[0].userId}', '${uuid}', '${expiresAt}')`
-      await ctx.app.context.db.runQuery(insertAccessToken)
-
-      const deleteActivation = `DELETE FROM activations WHERE userId = ${activation[0].userId}`
-      await ctx.app.context.db.runQuery(deleteActivation)
-
-      const expiresCookie = currentDate
-      ctx.cookies.set('accessToken', uuid, { expires: expiresCookie })
-
-      ctx.body = {
-        message: `Registration success`,
-        success: true
-      }
-    } catch (error) {
-      ctx.status = error.status || 500
-      ctx.body = error.message
+    if (new Date() > activation[0].expiresAt) {
+      this.errorService.unauthorized('Confirmation time is expired.')
     }
+
+    const emailVerifiedAt = this.helperService.getFormattedDate(new Date())
+
+    const updateUser = `UPDATE users SET emailVerifiedAt = '${emailVerifiedAt}' WHERE id = ${activation[0].userId}`
+    await DB.runQuery(updateUser)
+
+    const uuid = uuidv4()
+    const expirationDate = this.helperService.getExpirationDate(1)
+
+    const insertAccessToken = `INSERT INTO accessTokens(userId, accessToken, expiresAt) VALUES ('${activation[0].userId}', '${uuid}', '${expirationDate}')`
+    await DB.runQuery(insertAccessToken)
+
+    const deleteActivation = `DELETE FROM activations WHERE userId = ${activation[0].userId}`
+    await DB.runQuery(deleteActivation)
   }
 
-  async getActivationLink(ctx: Context) {
-    const email = ctx.cookies.get('email')
-    console.log({ email })
+  async getActivationLink(email: string, DB: any) {
+    const uuid = uuidv4()
 
-    try {
-      const uuid = uuidv4()
+    const expirationDate = this.helperService.getExpirationDate(1)
 
-      const currentDate = new Date()
-      currentDate.setHours(currentDate.getHours() + 1)
+    const selectUser = `SELECT * FROM users WHERE email = '${email}'`
+    const user = await DB.runQuery(selectUser)
 
-      const expiresAt = this.helperService.getFormattedDate(currentDate)
+    const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
+    await DB.runQuery(insertActivation)
 
-      const selectUser = `SELECT * FROM users WHERE email = '${email}'`
-      const user = await ctx.app.context.db.runQuery(selectUser)
+    this.emailService.sendActivationLink(email!, uuid)
+  }
 
-      const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expiresAt}')`
-      await ctx.app.context.db.runQuery(insertActivation)
+  async signin({ email, password }: User, DB: any) {
+    const selectUser = `SELECT email, password, emailVerifiedAt FROM users WHERE email = '${email}'`
+    const user = await DB.runQuery(selectUser)
 
-      this.helperService.sendEmail(email!, uuid)
-
-      const expiresCookie = currentDate
-      ctx.cookies.set('accessToken', uuid, { expires: expiresCookie })
-
-      ctx.body = {
-        message: `Email has been sent to ${email}. Follow the instruction to activate your account`
-      }
-    } catch (error) {
-      ctx.status = error.status || 500
-      ctx.body = error.message
+    if (!user) {
+      this.errorService.unauthorized('User with that email does not exists. Please signup.')
     }
-  }
 
-  async signin(ctx: Context) {
-    const { email, password } = <User>ctx.request.body
-    console.log({ password })
-    try {
-      const selectUser = `SELECT email, password, emailVerifiedAt FROM users WHERE email = '${email}'`
-      const user = await ctx.app.context.db.runQuery(selectUser)
-
-      if (!user) ctx.throw(401, 'User with that email does not exists. Please signup')
-
-      if (!user[0].emailVerifiedAt) ctx.throw(401, 'User with that email does not activate')
-
-      if (!this.helperService.comparePassword(password, user[0].password))
-        ctx.throw(401, 'Email and password do not match')
-
-      const currentDate = new Date()
-      currentDate.setHours(currentDate.getHours() + 1)
-      const uuid = uuidv4()
-      const expiresCookie = currentDate
-
-      ctx.cookies.set('accessToken', uuid, { expires: expiresCookie })
-
-      ctx.body = {
-        message: 'Login successful'
-      }
-    } catch (error) {
-      ctx.status = error.status || 500
-      ctx.body = error.message
+    if (!user[0].emailVerifiedAt) {
+      this.errorService.unauthorized('User with that email does not activate.')
     }
+
+    if (!this.comparePassword(password, user[0].password)) {
+      this.errorService.unauthorized('Email and password do not match.')
+    }
+
+    return user[0]
   }
 
-  async forgotPassword(ctx: Context) {
-    const { email } = <User>ctx.request.body
-    console.log({ email })
+  async forgotPassword(email: string, DB: any) {
+    const uuid = uuidv4()
+
+    const expirationDate = this.helperService.getExpirationDate(1)
+
+    const selectUser = `SELECT * FROM users WHERE email = '${email}'`
+    const user = await DB.runQuery(selectUser)
+
+    const insertRestorePasswordLink = `INSERT INTO restorePasswords(userId, uuid, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
+    await DB.runQuery(insertRestorePasswordLink)
+
+    this.emailService.sendRestorePasswordLink(email, uuid)
   }
 
-  async restorePassword(ctx: Context) {
-    const { resetPasswordLink, newPassword } = <UpdatePassword>ctx.request.body
-    console.log({ resetPasswordLink, newPassword })
+  async restorePassword(resetPasswordLink: string, newPassword: string, DB: any) {
+    const selectRestorePassword = `SELECT * FROM restorePasswords WHERE uuid = '${resetPasswordLink}'`
+    const restorePassword = await DB.runQuery(selectRestorePassword)
+
+    if (!restorePassword) {
+      this.errorService.unauthorized('Activation link already used.')
+    }
+
+    if (new Date() > restorePassword[0].expiresAt) {
+      this.errorService.unauthorized('Confirmation time is expired.')
+    }
+
+    const hashedPassword = await this.getHashedPassword(newPassword)
+
+    const updateUser = `UPDATE users SET password = '${hashedPassword}' WHERE id = ${restorePassword[0].userId}`
+    await DB.runQuery(updateUser)
+  }
+
+  // Private Methods
+  private async getHashedPassword(password: string) {
+    const salt = await bcrypt.genSalt(parseInt(this.config.salt || '7'))
+    return bcrypt.hashSync(password, salt)
+  }
+
+  private comparePassword(password: string, hashedPassword: string): boolean {
+    return bcrypt.compareSync(password, hashedPassword)
   }
 }
