@@ -1,18 +1,19 @@
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { Formik, Form } from 'formik';
 import { makeStyles, Theme } from '@material-ui/core';
 import { Typography, FormControl } from '@material-ui/core';
+
 import Button from "../components/common/Button";
 import TextField from '../components/common/TextField'
 import PasswordTextField from '../components/common/PasswordTextField'
 import { MainLayout } from '../components/MainLayout';
+import ActivationLinkExpired from '../components/ActivationLink';
 import { SignInSchema } from '../services/validationSchemas';
 import { LoginData } from '../interfaces';
-import React, { useState } from 'react';
 import API from '../services/api';
-import ActivationLinkExpired from '../components/ActivationLink';
-import { useErrorStore } from '../providers/RootStoreProvider';
+import { useErrorStore, useNoticeStore } from '../providers/RootStoreProvider';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -46,47 +47,39 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const router = useRouter()
-  const store = useErrorStore()
+  const errorStore = useErrorStore()
+  const noticeStore = useNoticeStore()
 
   const [isLoading, setLoading] = useState(false)
   const [isActivationLinkShow, setIsActivationLinkShow] = useState(false)
   const [email, setEmail] = useState('')
-  const [errors, setErrors] = useState('')
-  const [message, setMessage] = useState('')
 
   const handleSubmit = async (value: LoginData) => {
-
 
     setEmail(value.email)
 
     try {
       setLoading(true)
-
       const response = await API.signIn(value)
-      console.log({ response })
-
-      setMessage(response.message)
-      setErrors('')
       router.push('/')
+      noticeStore.setNotice(response.message)
     } catch (error) {
-      store.setError(error.response.data.error.message)
-      setErrors(error.response.data)
-      setIsActivationLinkShow(true)
+      errorStore.setError(error.response.data.error.message)
 
+      if (error.response.data?.error?.code === 'EXPIRED_LINK') {
+        setIsActivationLinkShow(true)
+      }
     } finally {
       setLoading(false)
     }
   }
 
   return (
-
     <MainLayout title='Login'>
       <div className={classes.root}>
-
         <Typography variant="h2" className={classes.title}>
           Login
       </Typography>
-
         <Formik
           // enableReinitialize
           onSubmit={handleSubmit}
@@ -106,7 +99,6 @@ export default function SignIn() {
                   placeholder="Enter Email"
                 />
               </FormControl>
-
               <FormControl fullWidth className={classes.formControl}>
                 <PasswordTextField
                   name="password"
@@ -114,7 +106,6 @@ export default function SignIn() {
                   placeholder="Enter Password"
                 />
               </FormControl>
-
               <div className={classes.buttonWrapper}>
                 <Button
                   disabled={!isValid}
@@ -127,15 +118,12 @@ export default function SignIn() {
                   Login
               </Button>
               </div>
-
               <div className={classes.linkWrapper}>
                 <p><Link href='/forgot-password'><a>Forgot Password?</a></Link></p>
               </div>
-
             </Form>
           )}
         </Formik>
-
         {isActivationLinkShow && <ActivationLinkExpired email={email} />}
       </div>
     </MainLayout>

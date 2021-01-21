@@ -12,17 +12,17 @@ export class ErrorStore {
 
     makeObservable(this, {
       hydrate: action,
-      clearMessage: action,
+      clearError: action,
       setError: action,
       error: observable
     })
   }
 
   setError = (error: string) => {
-    this.error = null
+    this.error = error
   }
 
-  clearMessage = () => {
+  clearError = () => {
     this.error = null
   }
 

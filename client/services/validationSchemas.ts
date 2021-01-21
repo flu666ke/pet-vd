@@ -25,3 +25,18 @@ export const RestorePasswordSchema = Yup.object().shape({
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
     .required('This field is required')
 })
+
+export const ProfileSchema = Yup.object().shape({
+  firstName: Yup.string().max(50, 'Maximum 50 characters').required('This field is required'),
+  lastName: Yup.string().max(50, 'Maximum 50 characters').required('This field is required'),
+  newPassword: Yup.string().when('oldPassword', {
+    is: (oldPassword: string) => oldPassword && oldPassword.length > 0,
+    then: Yup.string().min(6, 'required, min 6 symbols').required('This field is required')
+  }),
+  confirmNewPassword: Yup.string().when('oldPassword', {
+    is: (oldPassword: string) => oldPassword && oldPassword.length > 0,
+    then: Yup.string()
+      .oneOf([Yup.ref('newPassword'), null], 'Passwords must match')
+      .required('This field is required')
+  })
+})

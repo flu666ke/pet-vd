@@ -22,4 +22,11 @@ export default class ErrorService {
     err.code = ErrorCodeEnum.NOT_FOUND
     throw err
   }
+
+  public expiredLink(message: string) {
+    const err: ErrorResponse = new Error(message)
+    err.httpStatus = 401
+    err.code = ErrorCodeEnum.EXPIRED_LINK
+    throw err
+  }
 }

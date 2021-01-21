@@ -23,8 +23,13 @@ export default function authRoutes(app: Koa, authController: AuthController, hel
         user
       }
     } catch (error) {
-      ctx.status = error.httpCode || 500
-      ctx.body = { error: { message: error.message, httpCode: error.httpCode, statusCode: error.statusCode } }
+      ctx.status = error.httpStatus || 500
+      ctx.body = {
+        error: {
+          message: error.message,
+          ...error
+        }
+      }
     }
   }
 
@@ -91,9 +96,7 @@ export default function authRoutes(app: Koa, authController: AuthController, hel
     const { email, password } = <User>ctx.request.body
 
     try {
-      const user = await authController.signin({ email, password }, DB)
-      const uuid = uuidv4()
-      const expirationDate = helperService.getExpirationDate(1)
+      const { user, uuid, expirationDate } = await authController.signin({ email, password }, DB)
 
       ctx.cookies.set('accessToken', uuid, { expires: new Date(expirationDate) })
 

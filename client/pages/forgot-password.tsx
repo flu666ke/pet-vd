@@ -1,11 +1,13 @@
-import { makeStyles, FormControl, Typography } from "@material-ui/core";
-import { Formik, Form } from "formik";
 import { useState } from "react";
+import { Formik, Form } from "formik";
+import { makeStyles, FormControl, Typography } from "@material-ui/core";
+
 import Button from "../components/common/Button";
 import TextField from '../components/common/TextField'
 import { MainLayout } from "../components/MainLayout";
-import API from "../services/api";
 import { ForgotPasswordSchema } from "../services/validationSchemas";
+import API from "../services/api";
+import { useErrorStore, useNoticeStore } from "../providers/RootStoreProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,34 +32,22 @@ const useStyles = makeStyles((theme) => ({
 export default function ForgotPassword() {
   const classes = useStyles();
 
+  const errorStore = useErrorStore()
+  const noticeStore = useNoticeStore()
+
   const [isLoading, setLoading] = useState(false)
 
-  const [errors, setErrors] = useState('')
-  const [message, setMessage] = useState('')
-
-  const handleSubmit = async (value: any) => {
-
-    console.log({ value })
+  const handleSubmit = async ({ email }: { email: string }) => {
 
     try {
       setLoading(true)
-
-      const response = await API.forgotPassword(value.email)
-      console.log({ response })
-
-      setMessage(response.message)
-      setErrors('')
-      // router.push('/')
+      const response = await API.forgotPassword(email)
+      noticeStore.setNotice(response.message)
     } catch (error) {
-
-
-      setErrors(error.response.data)
-
-      console.log({ errors })
+      errorStore.setError(error.response.data?.error?.message)
     } finally {
       setLoading(false)
     }
-
   };
 
   return (
@@ -95,7 +85,6 @@ export default function ForgotPassword() {
             </Form>
           )}
         </Formik>
-        {errors ? errors : message}
       </div>
     </MainLayout>
   );

@@ -28,7 +28,6 @@ export class NoticeStore {
 
   hydrate(notice?: NoticeHydration) {
     if (notice) {
-      console.log('ErrorStore -- hydrate -- ', this.notice)
       this.notice = notice
     }
   }

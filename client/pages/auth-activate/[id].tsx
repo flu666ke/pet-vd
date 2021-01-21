@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles';
 import API from '../../services/api';
+import { useErrorStore, useNoticeStore } from '../../providers/RootStoreProvider';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -17,30 +18,34 @@ export default function AuthActivation() {
   const classes = useStyles();
   const router = useRouter()
 
+  const errorStore = useErrorStore()
+  const noticeStore = useNoticeStore()
+
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
     if (router.query.id) {
-      const load = async () => {
+      const confirmAuth = async () => {
         try {
-
+          setLoading(true)
           const response = await API.confirmAuth({ activationId: router.query.id })
-
-          console.log({ response })
+          noticeStore.setNotice(response.message)
 
           if (response) {
             router.push('/')
           }
         } catch (error) {
-          console.log({ error })
+          errorStore.setError(error.response.data.error.message)
           router.push('/signin')
+        } finally {
+          setLoading(false)
         }
-
-
       }
-      load()
+      confirmAuth()
     }
   }, [router.query.id]);
 
-  return <h1 className={classes.root}>Confirmation of registration</h1>
+  return <h1 className={classes.root}>{loading && 'Loader.....'}Confirmation of registration</h1>
 
 };
 

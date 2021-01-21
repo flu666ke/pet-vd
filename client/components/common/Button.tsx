@@ -53,8 +53,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface ButtonProps {
   color: "primary" | "secondary"
-  size: "normal" | "small"
-  loading: boolean
+  size?: "normal" | "small"
+  loading?: boolean
   children: any
   disabled?: boolean
   fullWidth?: boolean
@@ -62,7 +62,7 @@ interface ButtonProps {
   onClick?: () => void
 }
 
-export default function Button({ color, size, loading, children, disabled, ...restProps }: ButtonProps) {
+export default function Button({ color, size = 'normal', loading = false, children, disabled, ...restProps }: ButtonProps) {
   const classes = useStyles();
   return (
     <ButtonMaterial

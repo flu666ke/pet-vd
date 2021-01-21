@@ -1,45 +1,30 @@
+import React, { ReactNode } from 'react';
 import { observer } from 'mobx-react-lite';
 import Head from 'next/head'
-import React, { useEffect, useState } from 'react';
+
 import AuthHeader from './AuthHeader';
 import MessageSnackBar from './MessageSnackBar';
-import { useErrorStore } from "../providers/RootStoreProvider";
+import { useErrorStore, useNoticeStore } from "../providers/RootStoreProvider";
 
-const headerMenuLinks = [
-  {
-    to: '/',
-    text: 'home'
-  },
-  {
-    to: '/signin',
-    text: 'login'
-  },
-  {
-    to: '/signup',
-    text: 'register'
-  }
-];
+interface MaiLayoutProps {
+  title?: string
+  children?: ReactNode
+}
 
-export const MainLayout = observer(function MainLayout({ children, title = 'VD', message = '' }: any) {
+export const MainLayout = observer(function MainLayout({ children, title = 'VD' }: MaiLayoutProps) {
 
-  const store = useErrorStore();
-
-  console.log({ store })
+  const errorStore = useErrorStore();
+  const noticeStore = useNoticeStore();
 
   return (
     <>
       <Head>
         <title>{title}</title>
         <meta />
-        <meta />
-        <meta />
       </Head>
-
-      <AuthHeader menuLinks={headerMenuLinks} />
-      {/* <nav>NAVIGATION</nav> */}
-
-      {message && <MessageSnackBar text={message} type='success' onClear={store.clearMessage} />}
-      {store.error && <MessageSnackBar text={store.error} type='error' onClear={store.clearMessage} />}
+      <AuthHeader />
+      {noticeStore.notice && <MessageSnackBar text={noticeStore.notice} type='success' onClear={noticeStore.clearNotice} />}
+      {errorStore.error && <MessageSnackBar text={errorStore.error} type='error' onClear={errorStore.clearError} />}
       <main>
         {children}
       </main>

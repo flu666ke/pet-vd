@@ -21,6 +21,11 @@ export function useErrorStore() {
   return errorStore;
 }
 
+export function useNoticeStore() {
+  const { noticeStore } = useRootStore();
+  return noticeStore;
+}
+
 export function useUserStore() {
   const { userStore } = useRootStore();
   return userStore;

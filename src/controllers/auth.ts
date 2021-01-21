@@ -1,7 +1,5 @@
-import { Context } from 'koa'
 import { v4 as uuidv4 } from 'uuid'
 import bcrypt from 'bcrypt'
-import { UpdatePassword } from 'src/models/updatePassword'
 import { User } from '../models/user'
 import { IConfig } from 'src/config'
 import EmailService from 'src/module.email/emailService'
@@ -24,8 +22,13 @@ export default class AuthController {
 
   async getProfile(accessToken: string, DB: any): Promise<User> {
     const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
-    const users = await DB.runQuery(selectUser)
-    return users[0]
+    const user = await DB.runQuery(selectUser)
+
+    if (!user) {
+      this.errorService.unauthorized('User not authorized.')
+    }
+
+    return user[0]
   }
 
   async signup({ firstName, lastName, email, password }: User, DB: any) {
@@ -93,7 +96,7 @@ export default class AuthController {
   }
 
   async signin({ email, password }: User, DB: any) {
-    const selectUser = `SELECT email, password, emailVerifiedAt FROM users WHERE email = '${email}'`
+    const selectUser = `SELECT id, password, emailVerifiedAt FROM users WHERE email = '${email}'`
     const user = await DB.runQuery(selectUser)
 
     if (!user) {
@@ -101,14 +104,22 @@ export default class AuthController {
     }
 
     if (!user[0].emailVerifiedAt) {
-      this.errorService.unauthorized('User with that email does not activate.')
+      this.errorService.expiredLink('User with that email does not activate.')
     }
 
     if (!this.comparePassword(password, user[0].password)) {
       this.errorService.unauthorized('Email and password do not match.')
     }
 
-    return user[0]
+    const uuid = uuidv4()
+    const expirationDate = this.helperService.getExpirationDate(1)
+
+    console.log(user[0])
+
+    const insertAccessToken = `INSERT INTO accessTokens(userId, accessToken, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
+    await DB.runQuery(insertAccessToken)
+
+    return { user: user[0], uuid, expirationDate }
   }
 
   async forgotPassword(email: string, DB: any) {

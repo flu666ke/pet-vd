@@ -1,7 +1,7 @@
 import { useState } from 'react'
-// import Link from 'next/link'
 import { Formik, Form } from "formik";
 import { FormControl, makeStyles, Theme, Typography } from "@material-ui/core";
+
 import Button from "../components/common/Button";
 import TextField from '../components/common/TextField'
 import PasswordTextField from '../components/common/PasswordTextField'
@@ -9,7 +9,7 @@ import { MainLayout } from '../components/MainLayout';
 import { SignupSchema } from '../services/validationSchemas';
 import { RegisterData } from "../interfaces";
 import API from "../services/api";
-import { useErrorStore } from '../providers/RootStoreProvider';
+import { useErrorStore, useNoticeStore } from '../providers/RootStoreProvider';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -37,33 +37,19 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
-  const store = useErrorStore()
+  const errorStore = useErrorStore()
+  const noticeStore = useNoticeStore()
 
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState('')
-  const [message, setMessage] = useState('')
 
   const handleSubmit = async (values: RegisterData) => {
 
     try {
       setLoading(true)
-
       const response = await API.signUp(values)
-      console.log({ response })
-
-      setMessage(response.message)
-      setErrors('')
-
+      noticeStore.setNotice(response.message)
     } catch (error) {
-
-
-      console.log({ error })
-
-      store.setError(error.response.data.error.message)
-
-      setErrors(error.response.data)
-
-      console.log({ errors })
+      errorStore.setError(error.response.data?.error?.message)
     } finally {
       setLoading(false)
     }

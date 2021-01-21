@@ -1,29 +1,21 @@
 import { useState } from 'react'
 import Button from '../components/common/Button'
+import { useNoticeStore } from '../providers/RootStoreProvider'
 import API from '../services/api'
 
-export default function ActivationLinkExpired({ email }: any) {
-  // const classes = useStyles();
+export default function ActivationLinkExpired({ email }: { email: string }) {
 
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState('')
-  const [message, setMessage] = useState('')
+
+  const noticeStore = useNoticeStore()
 
   const getActivationLink = async () => {
-
     try {
       setLoading(true)
-
       const response = await API.getActivationLink(email)
-      console.log({ response })
-
-      setMessage(response.message)
-      setErrors('')
-
+      noticeStore.setNotice(response.message)
     } catch (error) {
-      setErrors(error.response.data)
-
-      console.log({ errors })
+      console.log({ error })
     } finally {
       setLoading(false)
     }
@@ -42,8 +34,6 @@ export default function ActivationLinkExpired({ email }: any) {
       >
         Get activation link
         </Button>
-
-      {message && <div>Check your email.</div>}
     </>
   );
 };
