@@ -14,6 +14,7 @@ import TextField from '../components/common/TextField';
 import PasswordTextField from '../components/common/PasswordTextField';
 import Button from '../components/common/Button';
 import ConfirmDialog from '../components/common/ConfirmDialog';
+import { GetServerSideProps } from 'next';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,7 +50,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Profile = observer(function HomePage() {
+const Profile = observer(function Profile() {
   const classes = useStyles();
   const userStore = useUserStore();
 
@@ -195,3 +196,35 @@ const Profile = observer(function HomePage() {
 })
 
 export default Profile
+
+export const getServerSideProps: GetServerSideProps = async function getServerSideProps(
+  ctx
+) {
+
+  let error = null
+  let profile = null
+
+  const cookie = ctx.req.headers.cookie
+  console.log({ cookie })
+
+  const response = await fetch(`http://localhost:5000`, { headers: { cookie: cookie! } })
+
+  if (response.status === 200) {
+    const { user } = await response.json()
+    profile = {
+      firstName: user.firstName,
+      lastName: user.lastName
+    }
+  } else if (response.status === 401) {
+    error = response.statusText
+  }
+
+  return {
+    props: {
+      hydrationData: {
+        error: error,
+        user: profile
+      },
+    },
+  };
+};

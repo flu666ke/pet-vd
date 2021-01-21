@@ -1,4 +1,4 @@
-import Koa, { Context } from 'koa'
+import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
 import cors from 'koa2-cors'
 import logger from 'koa-logger'
@@ -11,6 +11,8 @@ import Router from 'koa-router'
 import EmailService from './module.email/emailService'
 import ErrorService from './module.error/errorService'
 import HelperService from './module.helper/helperService'
+import profileRoutes from './routes/profileRoutes'
+import ProfileController from './controllers/profile'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -62,16 +64,21 @@ const startServer = (config: IConfig) => {
       config
     )
 
+    const profileController = new ProfileController(services.errorService)
+
     return {
-      authController
+      authController,
+      profileController
     }
   })()
 
   // Routes
   const routes = (() => {
-    const auth = authRoutes(core.app, controllers.authController, services.helperService)
+    const auth = authRoutes(core.app, controllers.authController)
+    const profile = profileRoutes(core.app, controllers.profileController)
     return {
-      auth
+      auth,
+      profile
     }
   })()
 }

@@ -1,37 +1,14 @@
 import Koa, { Context } from 'koa'
 import Router from 'koa-router'
-import { v4 as uuidv4 } from 'uuid'
-import { User } from 'src/models/user'
-import HelperService from 'src/module.helper/helperService'
-import AuthController from '../controllers/auth'
 
-import { checkCookies } from '../middleware/checkCookies'
+import { User } from 'src/models/user'
+import AuthController from '../controllers/auth'
 import { validateInputData } from '../validators/auth/auth'
 import { UpdatePassword } from 'src/models/updatePassword'
 
-export default function authRoutes(app: Koa, authController: AuthController, helperService: HelperService) {
+export default function authRoutes(app: Koa, authController: AuthController) {
   const router = new Router()
   const DB = app.context.db
-
-  async function getProfile(ctx: Context) {
-    try {
-      const accessToken = ctx.cookies.get('accessToken')
-
-      const user = await authController.getProfile(accessToken!, DB)
-
-      ctx.body = {
-        user
-      }
-    } catch (error) {
-      ctx.status = error.httpStatus || 500
-      ctx.body = {
-        error: {
-          message: error.message,
-          ...error
-        }
-      }
-    }
-  }
 
   async function signup(ctx: Context) {
     const { firstName, lastName, email, password } = <User>ctx.request.body
@@ -154,17 +131,38 @@ export default function authRoutes(app: Koa, authController: AuthController, hel
     }
   }
 
-  router.get('/', checkCookies, getProfile)
+  async function logout(ctx: Context) {
+    const accessToken = ctx.cookies.get('accessToken')
+
+    console.log({ accessToken })
+
+    try {
+      if (accessToken) {
+        await authController.logout(accessToken, DB)
+        ctx.cookies.set('accessToken', '')
+      }
+
+      ctx.body = {
+        message: 'Logout.'
+      }
+    } catch (error) {
+      ctx.status = error.httpStatus || 500
+      ctx.body = {
+        error: {
+          message: error.message,
+          ...error
+        }
+      }
+    }
+  }
 
   router.post('/signup', validateInputData, signup)
   router.post('/account-activation', accountActivation)
   router.post('/activation-link', getActivationLink)
   router.post('/signin', signin)
-
   router.post('/forgot-password', forgotPassword)
-
   router.post('/restore-password', restorePassword)
+  router.delete('/logout', logout)
 
-  // router.delete("/delete-user/:userId", deleteUser);
   app.use(router.routes())
 }

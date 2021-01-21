@@ -15,8 +15,13 @@ export class UserStore {
 
     makeObservable(this, {
       hydrate: action,
+      removeUser: action,
       user: observable
     })
+  }
+
+  removeUser = () => {
+    this.user = null
   }
 
   hydrate(user?: UserHydration) {

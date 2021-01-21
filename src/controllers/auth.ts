@@ -154,6 +154,11 @@ export default class AuthController {
     await DB.runQuery(updateUser)
   }
 
+  async logout(accessToken: string, DB: any) {
+    const deleteAccessToken = `DELETE FROM accessTokens WHERE accessToken = '${accessToken}'`
+    await DB.runQuery(deleteAccessToken)
+  }
+
   // Private Methods
   private async getHashedPassword(password: string) {
     const salt = await bcrypt.genSalt(parseInt(this.config.salt || '7'))

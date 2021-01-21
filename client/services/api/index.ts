@@ -23,8 +23,13 @@ instance.interceptors.response.use(
 )
 
 const API = {
-  async getHomePage() {
+  async getProfile() {
     const { data } = await instance.get('')
+
+    return data
+  },
+  async updateProfile(body: any) {
+    const { data } = await instance.patch('update-profile', body)
 
     return data
   },
@@ -55,6 +60,11 @@ const API = {
   },
   async restorePassword(body: any) {
     const { data } = await instance.post('restore-password', body)
+
+    return data
+  },
+  async logout() {
+    const { data } = await instance.delete('logout')
 
     return data
   }

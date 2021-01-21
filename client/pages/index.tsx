@@ -6,7 +6,9 @@ import { HomePage } from "../components/HomePage";
 import { MainLayout } from '../components/MainLayout';
 import { useErrorStore } from "../providers/RootStoreProvider";
 
-const Index = observer(function Index() {
+const Index = observer(function Index(props: any) {
+
+  console.log('index props --- ', props)
 
   const router = useRouter()
   const store = useErrorStore();

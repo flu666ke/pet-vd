@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { makeStyles } from '@material-ui/core';
 
 import { useUserStore } from '../providers/RootStoreProvider';
+import API from '../services/api';
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,6 +30,14 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.light,
     textTransform: 'uppercase',
     textDecoration: 'none'
+  },
+  logoutButton: {
+    color: theme.palette.primary.light,
+    textTransform: 'uppercase',
+    backgroundColor: theme.palette.background.default,
+    border: 'none',
+    outline: 'none',
+    cursor: 'pointer'
   }
 }));
 
@@ -61,10 +71,19 @@ interface MenuItem {
 export default function AuthHeader() {
   const classes = useStyles();
   const userStore = useUserStore()
+  const router = useRouter()
 
-  const killCookie = () => {
+  const killCookie = async () => {
 
-    console.log('killCookie')
+    try {
+      await API.logout()
+
+      userStore.removeUser()
+      router.push('/signin')
+
+    } catch (error) {
+      console.log({ error })
+    }
   }
 
   const createMenu = (menuLinks: MenuItem[]) => menuLinks.map((link: MenuItem) => (
@@ -91,7 +110,10 @@ export default function AuthHeader() {
         </a>
       </Link>
 
-      <ul className={classes.linksList}>{userStore.user ? privateLinksList : publicLinksList} <button onClick={killCookie}>kill cookie</button></ul>
+      <ul className={classes.linksList}>
+        {userStore.user ? privateLinksList : publicLinksList}
+        {userStore.user && <button className={classes.logoutButton} onClick={killCookie}>Logout</button>}
+      </ul>
     </header>
   );
 };
