@@ -40,10 +40,7 @@ export const getServerSideProps: GetServerSideProps = async function getServerSi
 
   if (response.status === 200) {
     const { user } = await response.json()
-    profile = {
-      firstName: user.firstName,
-      lastName: user.lastName
-    }
+    profile = user
   } else if (response.status === 401) {
     error = response.statusText
   }

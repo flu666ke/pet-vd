@@ -35,6 +35,11 @@ const API = {
 
     return data
   },
+  async deleteAccount() {
+    const { data } = await instance.delete('delete-account')
+
+    return data
+  },
   async signUp(body: RegisterData) {
     const { data } = await instance.post('signup', body)
 

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 import {
   makeStyles,
   FormControl,
@@ -10,14 +12,15 @@ import {
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { Formik, Form } from 'formik';
+
 import { MainLayout } from '../components/MainLayout';
 import { ProfileSchema } from '../services/validationSchemas'
-import { useUserStore } from '../providers/RootStoreProvider';
+import { useErrorStore, useNoticeStore, useUserStore } from '../providers/RootStoreProvider';
 import TextField from '../components/common/TextField';
 import PasswordTextField from '../components/common/PasswordTextField';
 import Button from '../components/common/Button';
 import ConfirmDialog from '../components/common/ConfirmDialog';
-import { GetServerSideProps } from 'next';
+import API from '../services/api';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -36,18 +39,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: 45
   },
   genderBlock: {
-    margin: '15px auto',
-    maxWidth: 430,
-    '& .MuiFormGroup-root': {
-      backgroundColor: 'rgba(255, 255, 255, .2)'
-    }
-
-
-    
+    maxWidth: 400,
+    margin: ' 20px auto',
   },
   radioField: {
-    // ...theme.typography.subtitle,
-    color: theme.palette.primary.main,
+    ...theme.typography.subtitle1,
+    color: theme.palette.primary.light,
     marginRight: 60
   },
   buttonsBlock: {
@@ -57,36 +54,74 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     width: 180
   },
-  modalButton: {
-    margin: '0 auto',
-    width: 200
-  }
 }));
+
+interface UpdateProfile {
+  firstName: string
+  lastName: string
+  gender?: string
+  newPassword?: string
+  oldPassword?: string
+}
 
 const Profile = observer(function Profile() {
   const classes = useStyles();
+  const router = useRouter()
+  const { error, setError } = useErrorStore();
+  const { setNotice } = useNoticeStore();
   const { user } = useUserStore();
 
   const [isLoading, setLoading] = useState(false)
-  const [isDeleteDialogOpen, setOpenRemoveDialog] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const handleOpenDialog = () => {
-    setOpenRemoveDialog(true);
+  useEffect(() => {
+    if (error && error === 'Unauthorized') {
+      router.push('/signin')
+    }
+  }, [])
+
+  const openConfirmDialog = () => {
+    setIsDeleteDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenRemoveDialog(false);
+  const closeConfirmDialog = () => {
+    setIsDeleteDialogOpen(false);
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = async (profileData: UpdateProfile) => {
 
-    console.log({ values })
+    console.log({ profileData })
 
-    // changeProfile(dataToChange);
+    try {
+      setLoading(true)
+      const response = await API.updateProfile(profileData)
+
+      setNotice(response.message)
+    } catch (error) {
+      setError(error.response.data?.error?.message)
+    } finally {
+      setLoading(false)
+    }
   };
 
-  const deleteProfile = () => {
-    // deleteProfile();
+  const deleteAccount = async () => {
+
+    try {
+      setLoading(true)
+      const response = await API.deleteAccount()
+
+      console.log({ response })
+      setNotice(response.message)
+
+      closeConfirmDialog()
+
+      router.push('/signin')
+
+    } catch (error) {
+      setError(error.response.data?.error?.message)
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
@@ -134,11 +169,11 @@ const Profile = observer(function Profile() {
                   name="lastName"
                 />
               </FormControl>
-             
+
+              <div className={classes.genderBlock}>
                 <FormControl component="fieldset" >
 
                   <RadioGroup
-                  className={classes.genderBlock}
                     name="gender"
                     value={values.gender}
                     onChange={handleChange}
@@ -150,7 +185,7 @@ const Profile = observer(function Profile() {
                       control={<Radio color="primary" />}
                       label="Male"
                     />
-                     <FormControlLabel
+                    <FormControlLabel
                       className={classes.radioField}
                       value="X"
                       control={<Radio color="primary" />}
@@ -161,10 +196,10 @@ const Profile = observer(function Profile() {
                       value="female"
                       control={<Radio color="primary" />}
                       label="Female"
-                    />                
+                    />
                   </RadioGroup>
                 </FormControl>
-            
+              </div>
 
               <Typography className={classes.title}>
                 Change Password
@@ -204,7 +239,7 @@ const Profile = observer(function Profile() {
                 </div>
                 <div className={classes.button}>
                   <Button
-                    onClick={handleOpenDialog}
+                    onClick={openConfirmDialog}
                     color="primary"
                     fullWidth
                     loading={isLoading}
@@ -225,10 +260,10 @@ const Profile = observer(function Profile() {
       </div>
 
       <ConfirmDialog
-        loading={false}
+        loading={isLoading}
         open={isDeleteDialogOpen}
-        onClose={handleCloseDialog}
-        onSubmit={deleteProfile}
+        onClose={closeConfirmDialog}
+        onSubmit={deleteAccount}
       >
         Are you sure that you want to delete this account?
       </ConfirmDialog>
@@ -252,10 +287,7 @@ export const getServerSideProps: GetServerSideProps = async function getServerSi
 
   if (response.status === 200) {
     const { user } = await response.json()
-    profile = {
-      firstName: user.firstName,
-      lastName: user.lastName
-    }
+    profile = user
   } else if (response.status === 401) {
     error = response.statusText
   }

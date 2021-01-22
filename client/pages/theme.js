@@ -49,7 +49,6 @@ const theme = createMuiTheme({
       fontSize: 32,
       fontWeight: 600,
       textTransform: 'uppercase',
-      color: colors.primary
     },
     // h3: {
     //   fontSize: 26,
@@ -62,11 +61,10 @@ const theme = createMuiTheme({
     //   fontWeight: 500,
     //   color: colors.secondary
     // },
-    // subtitle: {
-    //   fontSize: 16,
-    //   fontWeight: 400,
-    //   color: colors.grey
-    // },
+    subtitle1: {
+      fontSize: 16,
+      fontWeight: 400,
+    },
     // caption: {
     //   fontSize: 12,
     //   fontWeight: 400,

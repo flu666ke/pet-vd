@@ -5,14 +5,14 @@ import logger from 'koa-logger'
 
 import DB from './db'
 import { IConfig } from './config'
-import authRoutes from './routes/authRoutes'
 import AuthController from './controllers/auth'
 import Router from 'koa-router'
 import EmailService from './module.email/emailService'
 import ErrorService from './module.error/errorService'
 import HelperService from './module.helper/helperService'
-import profileRoutes from './routes/profileRoutes'
 import ProfileController from './controllers/profile'
+import profileRoutes from './routes/profile'
+import authRoutes from './routes/auth'
 
 const startServer = (config: IConfig) => {
   // Core

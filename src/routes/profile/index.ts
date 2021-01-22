@@ -1,8 +1,10 @@
+import { UpdateProfile } from '../../models/updateProfile'
 import Koa, { Context } from 'koa'
 import Router from 'koa-router'
 
 import ProfileController from 'src/controllers/profile'
-import { checkCookies } from '../middleware/checkCookies'
+import { checkCookies } from '../../middleware/checkCookies'
+import serializeProfile from './serialization'
 
 export default function profileRoutes(app: Koa, profileController: ProfileController) {
   const router = new Router()
@@ -14,8 +16,10 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
 
       const user = await profileController.getProfile(accessToken!, DB)
 
+      console.log({ user })
+
       ctx.body = {
-        user
+        user: serializeProfile(user)
       }
     } catch (error) {
       ctx.status = error.httpStatus || 500
@@ -31,11 +35,33 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
   async function updateProfile(ctx: Context) {
     try {
       const accessToken = ctx.cookies.get('accessToken')
+      const updateProfile = <UpdateProfile>ctx.request.body
 
-      const user = await profileController.updateProfile(accessToken!, DB)
+      const user = await profileController.updateProfile(updateProfile, accessToken!, DB)
 
       ctx.body = {
-        user
+        user: serializeProfile(user)
+      }
+    } catch (error) {
+      ctx.status = error.httpStatus || 500
+      ctx.body = {
+        error: {
+          message: error.message,
+          ...error
+        }
+      }
+    }
+  }
+
+  async function deleteAccount(ctx: Context) {
+    try {
+      const accessToken = ctx.cookies.get('accessToken')
+
+      await profileController.deleteAccount(accessToken!, DB)
+      ctx.cookies.set('accessToken', '')
+
+      ctx.body = {
+        message: `Account deleted successfully`
       }
     } catch (error) {
       ctx.status = error.httpStatus || 500
@@ -50,7 +76,7 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
 
   router.get('/', checkCookies, getProfile)
   router.patch('/update-profile', checkCookies, updateProfile)
-  // router.delete("/delete-user/:userId", deleteUser);
+  router.delete('/delete-account', checkCookies, deleteAccount)
 
   app.use(router.routes())
 }

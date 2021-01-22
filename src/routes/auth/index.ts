@@ -2,8 +2,8 @@ import Koa, { Context } from 'koa'
 import Router from 'koa-router'
 
 import { User } from 'src/models/user'
-import AuthController from '../controllers/auth'
-import { validateInputData } from '../validators/auth/auth'
+import AuthController from '../../controllers/auth'
+import { validateInputData } from '../../validators/auth/auth'
 import { UpdatePassword } from 'src/models/updatePassword'
 
 export default function authRoutes(app: Koa, authController: AuthController) {
@@ -134,13 +134,9 @@ export default function authRoutes(app: Koa, authController: AuthController) {
   async function logout(ctx: Context) {
     const accessToken = ctx.cookies.get('accessToken')
 
-    console.log({ accessToken })
-
     try {
-      if (accessToken) {
-        await authController.logout(accessToken, DB)
-        ctx.cookies.set('accessToken', '')
-      }
+      await authController.logout(accessToken!, DB)
+      ctx.cookies.set('accessToken', '')
 
       ctx.body = {
         message: 'Logout.'
