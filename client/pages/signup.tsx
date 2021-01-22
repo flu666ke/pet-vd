@@ -44,7 +44,7 @@ export default function SignUp() {
       const response = await API.signUp(values)
       setNotice(response.message)
     } catch (error) {
-      setError(error.response.data?.error?.message)
+      setError(error.response.data?.error)
     } finally {
       setLoading(false)
     }

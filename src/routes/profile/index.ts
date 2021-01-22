@@ -40,6 +40,7 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
       const user = await profileController.updateProfile(updateProfile, accessToken!, DB)
 
       ctx.body = {
+        message: `Account updated successfully`,
         user: serializeProfile(user)
       }
     } catch (error) {

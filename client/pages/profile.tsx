@@ -69,13 +69,13 @@ const Profile = observer(function Profile() {
   const router = useRouter()
   const { error, setError } = useErrorStore();
   const { setNotice } = useNoticeStore();
-  const { user } = useUserStore();
+  const { user, removeUser } = useUserStore();
 
   const [isLoading, setLoading] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (error && error === 'Unauthorized') {
+    if (error && error.message === 'Unauthorized') {
       router.push('/signin')
     }
   }, [])
@@ -89,8 +89,6 @@ const Profile = observer(function Profile() {
   };
 
   const handleSubmit = async (profileData: UpdateProfile) => {
-
-    console.log({ profileData })
 
     try {
       setLoading(true)
@@ -109,12 +107,9 @@ const Profile = observer(function Profile() {
     try {
       setLoading(true)
       const response = await API.deleteAccount()
-
-      console.log({ response })
       setNotice(response.message)
-
       closeConfirmDialog()
-
+      removeUser()
       router.push('/signin')
 
     } catch (error) {

@@ -1,9 +1,19 @@
+import { makeStyles, Theme } from '@material-ui/core';
 import { useState } from 'react'
 import Button from '../components/common/Button'
 import { useNoticeStore } from '../providers/RootStoreProvider'
 import API from '../services/api'
 
+const useStyles = makeStyles((theme: Theme) => ({
+  title: {
+    ...theme.typography.subtitle1,
+    color: theme.palette.primary.light,
+    marginRight: 60
+  },
+}));
+
 export default function ActivationLinkExpired({ email }: { email: string }) {
+  const classes = useStyles();
 
   const [loading, setLoading] = useState(false)
 
@@ -23,7 +33,7 @@ export default function ActivationLinkExpired({ email }: { email: string }) {
 
   return (
     <>
-      <h1>Activation link expired. For a new activation link click here.</h1>
+      <p className={classes.title}>Activation link expired. For a new activation link click here.</p>
       <Button
         onClick={getActivationLink}
         fullWidth

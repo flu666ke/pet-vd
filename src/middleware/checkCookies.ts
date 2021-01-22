@@ -13,7 +13,7 @@ export const checkCookies = async (ctx: Context, next: Next) => {
     }
   } catch (error) {
     ctx.status = error.status || 500
-    ctx.body = { error: { message: error.message, status: error.status } }
+    ctx.body = { error: { message: error.message, httpStatus: error.status } }
   }
 }
 

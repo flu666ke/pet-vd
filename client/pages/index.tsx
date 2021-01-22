@@ -14,7 +14,7 @@ const Index = observer(function Index(props: any) {
   const { error } = useErrorStore();
 
   useEffect(() => {
-    if (error && error === 'Unauthorized') {
+    if (error && error.message === 'Unauthorized') {
       router.push('/signin')
     }
   }, [])
@@ -30,7 +30,7 @@ export const getServerSideProps: GetServerSideProps = async function getServerSi
   ctx
 ) {
 
-  let error = null
+  let errors = null
   let profile = null
 
   const cookie = ctx.req.headers.cookie
@@ -42,13 +42,16 @@ export const getServerSideProps: GetServerSideProps = async function getServerSi
     const { user } = await response.json()
     profile = user
   } else if (response.status === 401) {
-    error = response.statusText
+    const { error } = await response.json()
+
+    console.log({ error })
+    errors = response.statusText
   }
 
   return {
     props: {
       hydrationData: {
-        error: error,
+        error: errors,
         user: profile
       },
     },

@@ -1,11 +1,15 @@
 import { action, makeObservable, observable } from 'mobx'
 import { RootStore } from './RootStore'
 
-export type ErrorHydration = string
+export type ErrorHydration = {
+  message: string
+  httpStatus?: number
+  code?: string
+}
 
 export class ErrorStore {
   root: RootStore
-  error: null | string | undefined
+  error: null | ErrorHydration | undefined
 
   constructor(root: RootStore) {
     this.root = root
@@ -18,7 +22,7 @@ export class ErrorStore {
     })
   }
 
-  setError = (error: string) => {
+  setError = (error: ErrorHydration) => {
     this.error = error
   }
 

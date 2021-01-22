@@ -44,7 +44,7 @@ export default function RestorePassword() {
       setNotice(response.message)
       router.push('/signin')
     } catch (error) {
-      setError(error.response.data?.error?.message)
+      setError(error.response.data?.error)
     } finally {
       setLoading(false)
     }

@@ -20,17 +20,6 @@ export default class AuthController {
     this.config = config
   }
 
-  async getProfile(accessToken: string, DB: any): Promise<User> {
-    const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
-    const user = await DB.runQuery(selectUser)
-
-    if (!user) {
-      this.errorService.unauthorized('User not authorized.')
-    }
-
-    return user[0]
-  }
-
   async signup({ firstName, lastName, email, password }: User, DB: any) {
     const selectEmail = `SELECT email FROM users WHERE email = '${email}'`
     const user = await DB.runQuery(selectEmail)
@@ -57,11 +46,11 @@ export default class AuthController {
     const activation = await DB.runQuery(selectActivation)
 
     if (!activation) {
-      this.errorService.unauthorized('Activation link already used.')
+      this.errorService.expiredLink('Activation link already used.')
     }
 
     if (new Date() > activation[0].expiresAt) {
-      this.errorService.unauthorized('Confirmation time is expired.')
+      this.errorService.expiredLink('Confirmation time is expired.')
     }
 
     const emailVerifiedAt = this.helperService.getFormattedDate(new Date())
@@ -88,6 +77,10 @@ export default class AuthController {
 
     const selectUser = `SELECT * FROM users WHERE email = '${email}'`
     const user = await DB.runQuery(selectUser)
+
+    if (!user) {
+      this.errorService.unauthorized('User with that email does not exists. Please signup.')
+    }
 
     const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertActivation)

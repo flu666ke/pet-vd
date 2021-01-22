@@ -42,7 +42,7 @@ export default function ForgotPassword() {
       const response = await API.forgotPassword(email)
       setNotice(response.message)
     } catch (error) {
-      setError(error.response.data?.error?.message)
+      setError(error.response.data?.error)
     } finally {
       setLoading(false)
     }

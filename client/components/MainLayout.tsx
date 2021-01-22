@@ -24,7 +24,7 @@ export const MainLayout = observer(function MainLayout({ children, title = 'VD' 
       </Head>
       <AuthHeader />
       {notice && <MessageSnackBar text={notice} type='success' onClear={clearNotice} />}
-      {error && <MessageSnackBar text={error} type='error' onClear={clearError} />}
+      {error && <MessageSnackBar text={error.message} type='error' onClear={clearError} />}
       <main>
         {children}
       </main>

@@ -1,12 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core';
 
 import { useUserStore } from '../providers/RootStoreProvider';
 import API from '../services/api';
 import { useRouter } from 'next/router';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     minHeight: 64,
     display: 'flex',
@@ -58,6 +58,10 @@ const privateMenuLinks = [
     text: 'home'
   },
   {
+    to: '/chat',
+    text: 'chat'
+  },
+  {
     to: '/profile',
     text: 'profile'
   }
@@ -74,13 +78,10 @@ export default function AuthHeader() {
   const { user, removeUser } = useUserStore()
 
   const logout = async () => {
-
     try {
       await API.logout()
-
       removeUser()
       router.push('/signin')
-
     } catch (error) {
       console.log({ error })
     }

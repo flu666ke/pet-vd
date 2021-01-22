@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { Formik, Form } from 'formik';
@@ -48,12 +48,20 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const router = useRouter()
-  const { setError } = useErrorStore()
+  const { setError, error } = useErrorStore()
   const { setNotice } = useNoticeStore()
 
   const [isLoading, setLoading] = useState(false)
   const [isActivationLinkShow, setIsActivationLinkShow] = useState(false)
   const [email, setEmail] = useState('')
+
+
+  useEffect(() => {
+    if (error && error.code === 'EXPIRED_LINK') {
+      // setIsActivationLinkShow(true)
+      console.log({ email })
+    }
+  }, []);
 
   const handleSubmit = async (loginData: LoginData) => {
 
@@ -65,7 +73,7 @@ export default function SignIn() {
       router.push('/')
       setNotice(response.message)
     } catch (error) {
-      setError(error.response.data.error.message)
+      setError(error.response.data.error)
 
       if (error.response.data?.error?.code === 'EXPIRED_LINK') {
         setIsActivationLinkShow(true)
