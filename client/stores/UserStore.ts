@@ -4,6 +4,7 @@ import { RootStore } from './RootStore'
 export type UserHydration = {
   firstName: string
   lastName: string
+  gender?: string
 }
 
 export class UserStore {

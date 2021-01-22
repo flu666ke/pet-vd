@@ -70,15 +70,15 @@ interface MenuItem {
 
 export default function AuthHeader() {
   const classes = useStyles();
-  const userStore = useUserStore()
   const router = useRouter()
+  const { user, removeUser } = useUserStore()
 
-  const killCookie = async () => {
+  const logout = async () => {
 
     try {
       await API.logout()
 
-      userStore.removeUser()
+      removeUser()
       router.push('/signin')
 
     } catch (error) {
@@ -111,8 +111,8 @@ export default function AuthHeader() {
       </Link>
 
       <ul className={classes.linksList}>
-        {userStore.user ? privateLinksList : publicLinksList}
-        {userStore.user && <button className={classes.logoutButton} onClick={killCookie}>Logout</button>}
+        {user ? privateLinksList : publicLinksList}
+        {user && <button className={classes.logoutButton} onClick={logout}>Logout</button>}
       </ul>
     </header>
   );

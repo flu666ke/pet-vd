@@ -9,24 +9,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   primary: {
     background: theme.palette.primary.main,
-    color: "#544545",
+    color: theme.palette.primary.light,
     "&:disabled": {
       opacity: "0.5",
-      color: "#787878",
+      color: theme.palette.grey,
     },
     "&:hover": {
       background: theme.palette.primary.light,
+      color: theme.palette.primary.main,
     },
   },
   secondary: {
     background: theme.palette.secondary.main,
-    color: "#544545",
+    color: theme.palette.primary.light,
     "&:disabled": {
       opacity: "0.5",
-      color: "#787878",
+      color: theme.palette.grey,
     },
     "&:hover": {
       background: theme.palette.secondary.light,
+      color: theme.palette.primary.main,
     },
   },
   shadow: {
@@ -44,10 +46,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: "0px 5px",
   },
   circularPrimary: {
-    color: "#fff",
+    color: theme.palette.primary.light,
   },
   circularSecondary: {
-    color: theme.palette.primary.main,
+    color: theme.palette.primary.light,
   },
 }));
 
@@ -81,6 +83,7 @@ export default function Button({ color, size = 'normal', loading = false, childr
           color={color}
           classes={{
             colorPrimary: classes.circularPrimary,
+            colorSecondary: classes.circularSecondary
           }}
         />
       ) : (

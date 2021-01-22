@@ -17,14 +17,12 @@ const useStyles = makeStyles((theme) => ({
     padding: '55px 15px 25px'
   },
   title: {
-    textAlign: "center",
+    ...theme.typography.h2,
+    textAlign: 'center',
     marginBottom: 30,
     color: theme.palette.primary.light,
   },
   formControl: {
-    marginBottom: 45,
-  },
-  button: {
     marginBottom: 45,
   },
 }));
@@ -32,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
 export default function ForgotPassword() {
   const classes = useStyles();
 
-  const errorStore = useErrorStore()
-  const noticeStore = useNoticeStore()
+  const { setError } = useErrorStore()
+  const { setNotice } = useNoticeStore()
 
   const [isLoading, setLoading] = useState(false)
 
@@ -42,9 +40,9 @@ export default function ForgotPassword() {
     try {
       setLoading(true)
       const response = await API.forgotPassword(email)
-      noticeStore.setNotice(response.message)
+      setNotice(response.message)
     } catch (error) {
-      errorStore.setError(error.response.data?.error?.message)
+      setError(error.response.data?.error?.message)
     } finally {
       setLoading(false)
     }
@@ -53,7 +51,7 @@ export default function ForgotPassword() {
   return (
     <MainLayout title={'Forgot password'}>
       <div className={classes.root}>
-        <Typography variant='h2' className={classes.title}>
+        <Typography className={classes.title}>
           Forgot Password
       </Typography>
         <Formik
@@ -70,18 +68,16 @@ export default function ForgotPassword() {
               <FormControl className={classes.formControl} fullWidth>
                 <TextField name='email' label='Email' placeholder='Enter Email' />
               </FormControl>
-              <div className={classes.button}>
-                <Button
-                  type='submit'
-                  loading={isLoading}
-                  size="normal"
-                  color="secondary"
-                  fullWidth
-                  disabled={!isValid}
-                >
-                  Restore
+              <Button
+                type='submit'
+                loading={isLoading}
+                size="normal"
+                color="secondary"
+                fullWidth
+                disabled={!isValid}
+              >
+                Restore
               </Button>
-              </div>
             </Form>
           )}
         </Formik>

@@ -19,23 +19,21 @@ const useStyles = makeStyles(theme => ({
     padding: '55px 15px 25px'
   },
   title: {
-    textAlign: "center",
+    ...theme.typography.h2,
+    textAlign: 'center',
     marginBottom: 30,
     color: theme.palette.primary.light,
   },
   formControl: {
-    marginBottom: 45
-  },
-  button: {
-    marginBottom: 45
+    marginBottom: 45,
   },
 }));
 
 export default function RestorePassword() {
   const classes = useStyles();
   const router = useRouter()
-  const errorStore = useErrorStore()
-  const noticeStore = useNoticeStore()
+  const { setError } = useErrorStore()
+  const { setNotice } = useNoticeStore()
 
   const [loading, setLoading] = useState(false)
 
@@ -43,10 +41,10 @@ export default function RestorePassword() {
     try {
       setLoading(true)
       const response = await await API.restorePassword({ newPassword: password, resetPasswordLink: router.query.id })
-      noticeStore.setNotice(response.message)
+      setNotice(response.message)
       router.push('/signin')
     } catch (error) {
-      errorStore.setError(error.response.data?.error?.message)
+      setError(error.response.data?.error?.message)
     } finally {
       setLoading(false)
     }
@@ -55,7 +53,7 @@ export default function RestorePassword() {
   return (
     <MainLayout title={'Restore password'}>
       <div className={classes.root}>
-        <Typography variant="h2" className={classes.title}>
+        <Typography className={classes.title}>
           Restore Password
       </Typography>
         <Formik
@@ -85,18 +83,16 @@ export default function RestorePassword() {
                     placeholder="Enter Password Again"
                   />
                 </FormControl>
-                <div className={classes.button}>
-                  <Button
-                    fullWidth
-                    disabled={!isValid}
-                    color="secondary"
-                    size="normal"
-                    type="submit"
-                    loading={loading}
-                  >
-                    Restore
+                <Button
+                  fullWidth
+                  disabled={!isValid}
+                  color="secondary"
+                  size="normal"
+                  type="submit"
+                  loading={loading}
+                >
+                  Restore
                 </Button>
-                </div>
               </Form>
             </>
           )}

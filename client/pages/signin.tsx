@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '55px 15px 25px'
   },
   title: {
+    ...theme.typography.h2,
     textAlign: 'center',
     marginBottom: 30,
     color: theme.palette.primary.light,
@@ -47,24 +48,24 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const router = useRouter()
-  const errorStore = useErrorStore()
-  const noticeStore = useNoticeStore()
+  const { setError } = useErrorStore()
+  const { setNotice } = useNoticeStore()
 
   const [isLoading, setLoading] = useState(false)
   const [isActivationLinkShow, setIsActivationLinkShow] = useState(false)
   const [email, setEmail] = useState('')
 
-  const handleSubmit = async (value: LoginData) => {
+  const handleSubmit = async (loginData: LoginData) => {
 
-    setEmail(value.email)
+    setEmail(loginData.email)
 
     try {
       setLoading(true)
-      const response = await API.signIn(value)
+      const response = await API.signIn(loginData)
       router.push('/')
-      noticeStore.setNotice(response.message)
+      setNotice(response.message)
     } catch (error) {
-      errorStore.setError(error.response.data.error.message)
+      setError(error.response.data.error.message)
 
       if (error.response.data?.error?.code === 'EXPIRED_LINK') {
         setIsActivationLinkShow(true)
@@ -77,7 +78,7 @@ export default function SignIn() {
   return (
     <MainLayout title='Login'>
       <div className={classes.root}>
-        <Typography variant="h2" className={classes.title}>
+        <Typography className={classes.title}>
           Login
       </Typography>
         <Formik

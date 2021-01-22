@@ -16,6 +16,8 @@ instance.interceptors.response.use(
 
     if (err.response.status === 401) {
       console.log('err.response.status --- ', err.response.status)
+
+      // window.location.href = '/'
     }
 
     return Promise.reject(err)

@@ -11,10 +11,10 @@ const Index = observer(function Index(props: any) {
   console.log('index props --- ', props)
 
   const router = useRouter()
-  const store = useErrorStore();
+  const { error } = useErrorStore();
 
   useEffect(() => {
-    if (store.error && store.error === 'Unauthorized') {
+    if (error && error === 'Unauthorized') {
       router.push('/signin')
     }
   }, [])

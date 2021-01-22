@@ -3,35 +3,39 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
 import Button from './Button';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     '& .MuiBackdrop-root': {
-      backgroundColor: 'rgba(255, 255, 255, .6)'
+      backgroundColor: 'rgba(255, 255, 255, .2)'
     }
   },
   paper: {
     minWidth: 520,
     boxShadow:
-      '0 12px 15px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19)'
+      '0 12px 15px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19)',
+    '& .MuiDialogContent-root': {
+      backgroundColor: theme.palette.background.default
+    }
   },
   contentRoot: {
     padding: '75px 30px 30px',
-
     '&:first-child': {
       paddingTop: '75px'
     }
   },
   closeButton: {
+    color: theme.palette.primary.light,
     position: 'absolute',
     top: 0,
     right: 0
   },
   message: {
     textAlign: 'center',
-    marginBottom: 56
+    marginBottom: 56,
+    color: theme.palette.primary.light,
   },
   button: {
     width: 160
@@ -39,14 +43,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   buttonsRow: {
     display: 'flex',
     justifyContent: 'space-between'
-  },
-  circularPrimary: {
-    color: "#fff",
-  },
-  circularSecondary: {
-    color: theme.palette.primary.main,
-  },
+  }
 }))
+
+interface ConfirmDialogProps {
+  children: string
+  loading?: boolean
+  open?: boolean
+  onSubmit: () => void
+  onClose: () => void
+}
 
 const ConfirmDialog = ({
   children,
@@ -54,9 +60,8 @@ const ConfirmDialog = ({
   onClose,
   loading,
   ...restProps
-}: any) => {
+}: ConfirmDialogProps) => {
   const classes = useStyles();
-
 
   return (
     <Dialog
@@ -71,7 +76,6 @@ const ConfirmDialog = ({
       <IconButton
         onClick={onClose}
         className={classes.closeButton}
-        aria-label="close-modal"
       >
         <CloseIcon />
       </IconButton>
@@ -89,17 +93,7 @@ const ConfirmDialog = ({
           </div>
           <div className={classes.button}>
             <Button fullWidth onClick={onSubmit} disabled={loading} color='primary'>
-              {loading ? (
-                <CircularProgress
-                  size={30}
-                  classes={{
-                    colorPrimary: classes.circularPrimary,
-                    colorSecondary: classes.circularSecondary
-                  }}
-                />
-              ) : (
-                  'yes'
-                )}
+              yes
             </Button>
           </div>
         </div>

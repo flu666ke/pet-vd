@@ -18,8 +18,8 @@ export default function AuthActivation() {
   const classes = useStyles();
   const router = useRouter()
 
-  const errorStore = useErrorStore()
-  const noticeStore = useNoticeStore()
+  const { setError } = useErrorStore()
+  const { setNotice } = useNoticeStore()
 
   const [loading, setLoading] = useState(false)
 
@@ -29,13 +29,13 @@ export default function AuthActivation() {
         try {
           setLoading(true)
           const response = await API.confirmAuth({ activationId: router.query.id })
-          noticeStore.setNotice(response.message)
+          setNotice(response.message)
 
           if (response) {
             router.push('/')
           }
         } catch (error) {
-          errorStore.setError(error.response.data.error.message)
+          setError(error.response.data.error.message)
           router.push('/signin')
         } finally {
           setLoading(false)

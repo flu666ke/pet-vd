@@ -19,26 +19,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '55px 15px 25px'
   },
   title: {
-    marginTop: 20,
-    textAlign: "center",
+    ...theme.typography.h2,
+    textAlign: 'center',
+    marginBottom: 30,
     color: theme.palette.primary.light,
   },
-  form: {
-    marginTop: 25,
-  },
-  control: {
-    marginBottom: 52,
-  },
-  button: {
-    marginTop: 43,
+  formControl: {
+    marginBottom: 45
   },
 }));
 
 export default function SignUp() {
   const classes = useStyles();
 
-  const errorStore = useErrorStore()
-  const noticeStore = useNoticeStore()
+  const { setError } = useErrorStore()
+  const { setNotice } = useNoticeStore()
 
   const [loading, setLoading] = useState(false)
 
@@ -47,9 +42,9 @@ export default function SignUp() {
     try {
       setLoading(true)
       const response = await API.signUp(values)
-      noticeStore.setNotice(response.message)
+      setNotice(response.message)
     } catch (error) {
-      errorStore.setError(error.response.data?.error?.message)
+      setError(error.response.data?.error?.message)
     } finally {
       setLoading(false)
     }
@@ -58,7 +53,8 @@ export default function SignUp() {
   return (
     <MainLayout title='Registration'>
       <div className={classes.root}>
-        <Typography component='h2' variant='h2' className={classes.title}>
+        {/* <Typography component='h2' variant='h2' className={classes.title}> */}
+        <Typography className={classes.title}>
           Registration
         </Typography>
         <div>
@@ -76,54 +72,52 @@ export default function SignUp() {
             }}
           >
             {({ isValid }) => (
-              <Form className={classes.form}>
-                <FormControl className={classes.control} fullWidth>
+              <Form >
+                <FormControl className={classes.formControl} fullWidth>
                   <TextField
                     placeholder='Enter First Name'
                     label='First Name'
                     name='firstName'
                   />
                 </FormControl>
-                <FormControl className={classes.control} fullWidth>
+                <FormControl className={classes.formControl} fullWidth>
                   <TextField
                     placeholder='Enter Last Name'
                     label='Last Name'
                     name='lastName'
                   />
                 </FormControl>
-                <FormControl className={classes.control} fullWidth>
+                <FormControl className={classes.formControl} fullWidth>
                   <TextField
                     placeholder='Enter email'
                     label='Email'
                     name='email'
                   />
                 </FormControl>
-                <FormControl className={classes.control} fullWidth>
+                <FormControl className={classes.formControl} fullWidth>
                   <PasswordTextField
                     placeholder='Enter password'
                     label='Password'
                     name='password'
                   />
                 </FormControl>
-                <FormControl className={classes.control} fullWidth>
+                <FormControl className={classes.formControl} fullWidth>
                   <PasswordTextField
                     placeholder="Enter Password Again"
                     label="Confirm Password"
                     name="confirmPassword"
                   />
                 </FormControl>
-                <FormControl fullWidth className={classes.button}>
-                  <Button
-                    fullWidth
-                    disabled={!isValid}
-                    color="primary"
-                    size="normal"
-                    type="submit"
-                    loading={loading}
-                  >
-                    Register
+                <Button
+                  fullWidth
+                  disabled={!isValid}
+                  color="secondary"
+                  size="normal"
+                  type="submit"
+                  loading={loading}
+                >
+                  Register
                   </Button>
-                </FormControl>
               </Form>
             )}
           </Formik>

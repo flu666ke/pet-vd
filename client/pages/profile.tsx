@@ -3,7 +3,10 @@ import {
   makeStyles,
   FormControl,
   Typography,
-  Grid,
+  Radio,
+  FormControlLabel,
+  RadioGroup,
+  Theme,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { Formik, Form } from 'formik';
@@ -16,33 +19,43 @@ import Button from '../components/common/Button';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { GetServerSideProps } from 'next';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    maxWidth: 600,
+    maxWidth: 630,
     width: '100%',
-    margin: 0
+    margin: '0 auto',
+    padding: '55px 15px 25px'
   },
   title: {
+    ...theme.typography.h2,
     textAlign: 'center',
     marginBottom: 30,
     color: theme.palette.primary.light,
   },
-  input: {
-    marginBottom: 50
+  formControl: {
+    marginBottom: 45
   },
-  rightCol: {
-    display: 'flex'
+  genderBlock: {
+    margin: '15px auto',
+    maxWidth: 430,
+    '& .MuiFormGroup-root': {
+      backgroundColor: 'rgba(255, 255, 255, .2)'
+    }
+
+
+    
+  },
+  radioField: {
+    // ...theme.typography.subtitle,
+    color: theme.palette.primary.main,
+    marginRight: 60
+  },
+  buttonsBlock: {
+    display: 'flex',
+    justifyContent: 'space-between'
   },
   button: {
-    marginTop: 'auto',
-    marginLeft: 'auto',
     width: 180
-  },
-  message: {
-    // ...theme.typography.menu,
-    margin: '0 auto 35px',
-    color: theme.palette.primary.main,
-    textAlign: 'center'
   },
   modalButton: {
     margin: '0 auto',
@@ -52,10 +65,10 @@ const useStyles = makeStyles(theme => ({
 
 const Profile = observer(function Profile() {
   const classes = useStyles();
-  const userStore = useUserStore();
+  const { user } = useUserStore();
 
   const [isLoading, setLoading] = useState(false)
-  const [isOpenRemoveDialog, setOpenRemoveDialog] = useState(false);
+  const [isDeleteDialogOpen, setOpenRemoveDialog] = useState(false);
 
   const handleOpenDialog = () => {
     setOpenRemoveDialog(true);
@@ -72,125 +85,153 @@ const Profile = observer(function Profile() {
     // changeProfile(dataToChange);
   };
 
-  const handleDeleteAccount = () => {
+  const deleteProfile = () => {
     // deleteProfile();
   };
 
   return (
     <MainLayout title='Profile'>
-      {userStore.user && <h2>User name: `${userStore.user.firstName} ${userStore.user.lastName}`</h2>}
+      {/* {user && <h2>User name: `${user.firstName} ${user.lastName}`</h2>} */}
 
-      <Grid container>
-        <Grid item sm={6}>
-          <div className={classes.root}>
-            <Typography variant="h2" className={classes.title}>
-              My Profile
+      <div className={classes.root}>
+        <Typography className={classes.title}>
+          My Profile
           </Typography>
-            <Formik
-              enableReinitialize
-              onSubmit={handleSubmit}
-              initialValues={{
-                firstName: userStore.user?.firstName || '',
-                lastName: userStore.user?.lastName || '',
+        <Formik
+          enableReinitialize
+          onSubmit={handleSubmit}
+          initialValues={{
+            firstName: user?.firstName || '',
+            lastName: user?.lastName || '',
+            gender: user?.gender || '',
+            oldPassword: '',
+            newPassword: '',
+            confirmNewPassword: ''
+          }}
+          // initialErrors={errors}
+          validationSchema={ProfileSchema}
+        >
+          {({
+            isValid,
+            // handleBlur,
+            handleChange,
+            // setFieldValue,
+            values,
+            // dirty
+          }) => (
+            <Form>
+              <FormControl className={classes.formControl} fullWidth>
+                <TextField
+                  placeholder="Enter First Name"
+                  label="First Name"
+                  name="firstName"
+                />
+              </FormControl>
+              <FormControl className={classes.formControl} fullWidth>
+                <TextField
+                  placeholder="Enter Last Name"
+                  label="Last Name"
+                  name="lastName"
+                />
+              </FormControl>
+             
+                <FormControl component="fieldset" >
 
-                oldPassword: '',
-                newPassword: '',
-                confirmNewPassword: ''
-              }}
-              // initialErrors={errors}
-              validationSchema={ProfileSchema}
-            >
-              {({
-                isValid,
-                // handleBlur,
-                // handleChange,
-                // setFieldValue,
-                // values,
-                // dirty
-              }) => (
-                <Form>
-                  <FormControl className={classes.input} fullWidth>
-                    <TextField
-                      placeholder="Enter First Name"
-                      label="First Name"
-                      name="firstName"
+                  <RadioGroup
+                  className={classes.genderBlock}
+                    name="gender"
+                    value={values.gender}
+                    onChange={handleChange}
+                    row
+                  >
+                    <FormControlLabel
+                      className={classes.radioField}
+                      value="male"
+                      control={<Radio color="primary" />}
+                      label="Male"
                     />
-                  </FormControl>
-                  <FormControl className={classes.input} fullWidth>
-                    <TextField
-                      placeholder="Enter Last Name"
-                      label="Last Name"
-                      name="lastName"
+                     <FormControlLabel
+                      className={classes.radioField}
+                      value="X"
+                      control={<Radio color="primary" />}
+                      label="X"
                     />
-                  </FormControl>
+                    <FormControlLabel
+                      className={classes.radioField}
+                      value="female"
+                      control={<Radio color="primary" />}
+                      label="Female"
+                    />                
+                  </RadioGroup>
+                </FormControl>
+            
 
-                  <Typography variant="h2" className={classes.title}>
-                    Change Password
+              <Typography className={classes.title}>
+                Change Password
                 </Typography>
-                  <FormControl className={classes.input} fullWidth>
-                    <PasswordTextField
-                      placeholder="Type Old Password"
-                      label="Old Password"
-                      name="oldPassword"
-                    />
-                  </FormControl>
-                  <FormControl className={classes.input} fullWidth>
-                    <PasswordTextField
-                      placeholder="Type New Password"
-                      label="New Password"
-                      name="newPassword"
-                    />
-                  </FormControl>
-                  <FormControl className={classes.input} fullWidth>
-                    <PasswordTextField
-                      placeholder="Type New Password Again"
-                      label="Confirm New Password"
-                      name="confirmNewPassword"
-                    />
-                  </FormControl>
-                  <div className={classes.button}>
-                    <Button
-                      fullWidth
-                      loading={isLoading}
-                      disabled={!isValid}
-                      color="secondary"
-                      type="submit"
-                    >
-                      Save
+              <FormControl className={classes.formControl} fullWidth>
+                <PasswordTextField
+                  placeholder="Type Old Password"
+                  label="Old Password"
+                  name="oldPassword"
+                />
+              </FormControl>
+              <FormControl className={classes.formControl} fullWidth>
+                <PasswordTextField
+                  placeholder="Type New Password"
+                  label="New Password"
+                  name="newPassword"
+                />
+              </FormControl>
+              <FormControl className={classes.formControl} fullWidth>
+                <PasswordTextField
+                  placeholder="Type New Password Again"
+                  label="Confirm New Password"
+                  name="confirmNewPassword"
+                />
+              </FormControl>
+              <div className={classes.buttonsBlock}>
+                <div className={classes.button}>
+                  <Button
+                    fullWidth
+                    loading={isLoading}
+                    disabled={!isValid}
+                    color="secondary"
+                    type="submit"
+                  >
+                    Save
                   </Button>
-                  </div>
-                  {/* <Prompt
+                </div>
+                <div className={classes.button}>
+                  <Button
+                    onClick={handleOpenDialog}
+                    color="primary"
+                    fullWidth
+                    loading={isLoading}
+                  >
+                    Delete Account
+            </Button>
+                </div>
+              </div>
+              {/* <Prompt
                   when={dirty}
                   message={() =>
                     'There are unsaved changes. Are you sure to leave the page?'
                   }
                 /> */}
-                </Form>
-              )}
-            </Formik>
-          </div>
-        </Grid>
-        <Grid item sm={6} className={classes.rightCol}>
+            </Form>
+          )}
+        </Formik>
+      </div>
 
-          <div className={classes.button}>
-            <Button onClick={handleOpenDialog} color="primary" fullWidth loading={isLoading}>
-              Delete Account
-            </Button>
-          </div>
-
-        </Grid>
-        <ConfirmDialog
-          loading={false}
-          open={isOpenRemoveDialog}
-          onClose={handleCloseDialog}
-          onSubmit={handleDeleteAccount}
-        >
-          <p className={classes.message}>
-            Are you sure that you want to delete this account?
-        </p>
-        </ConfirmDialog>
-      </Grid>
-
+      <ConfirmDialog
+        loading={false}
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDialog}
+        onSubmit={deleteProfile}
+      >
+        Are you sure that you want to delete this account?
+      </ConfirmDialog>
     </MainLayout>
   )
 })

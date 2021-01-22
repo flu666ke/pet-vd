@@ -55,7 +55,7 @@ class DB {
       console.log('Online Database')
 
       DB.runQuery(
-        'CREATE TABLE IF NOT EXISTS `users`(`id` int AUTO_INCREMENT, `firstName` VARCHAR(60), `lastName` VARCHAR(60), `email` VARCHAR(255), `password` VARCHAR(60), PRIMARY KEY(id), `emailVerifiedAt` DATETIME)'
+        'CREATE TABLE IF NOT EXISTS `users`(`id` int AUTO_INCREMENT, `firstName` VARCHAR(60), `lastName` VARCHAR(60), `gender` VARCHAR(60), `email` VARCHAR(255), `password` VARCHAR(60), PRIMARY KEY(id), `emailVerifiedAt` DATETIME)'
       )
 
       DB.runQuery(

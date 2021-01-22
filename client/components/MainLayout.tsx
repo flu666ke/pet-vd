@@ -13,8 +13,8 @@ interface MaiLayoutProps {
 
 export const MainLayout = observer(function MainLayout({ children, title = 'VD' }: MaiLayoutProps) {
 
-  const errorStore = useErrorStore();
-  const noticeStore = useNoticeStore();
+  const { error, clearError } = useErrorStore();
+  const { notice, clearNotice } = useNoticeStore();
 
   return (
     <>
@@ -23,8 +23,8 @@ export const MainLayout = observer(function MainLayout({ children, title = 'VD' 
         <meta />
       </Head>
       <AuthHeader />
-      {noticeStore.notice && <MessageSnackBar text={noticeStore.notice} type='success' onClear={noticeStore.clearNotice} />}
-      {errorStore.error && <MessageSnackBar text={errorStore.error} type='error' onClear={errorStore.clearError} />}
+      {notice && <MessageSnackBar text={notice} type='success' onClear={clearNotice} />}
+      {error && <MessageSnackBar text={error} type='error' onClear={clearError} />}
       <main>
         {children}
       </main>

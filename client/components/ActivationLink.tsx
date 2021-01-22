@@ -7,13 +7,13 @@ export default function ActivationLinkExpired({ email }: { email: string }) {
 
   const [loading, setLoading] = useState(false)
 
-  const noticeStore = useNoticeStore()
+  const { setNotice } = useNoticeStore()
 
   const getActivationLink = async () => {
     try {
       setLoading(true)
       const response = await API.getActivationLink(email)
-      noticeStore.setNotice(response.message)
+      setNotice(response.message)
     } catch (error) {
       console.log({ error })
     } finally {
