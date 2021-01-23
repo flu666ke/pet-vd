@@ -96,7 +96,7 @@ const Profile = observer(function Profile() {
 
       setNotice(response.message)
     } catch (error) {
-      setError(error.response.data?.error?.message)
+      setError(error.response.data?.error)
     } finally {
       setLoading(false)
     }
@@ -113,7 +113,7 @@ const Profile = observer(function Profile() {
       router.push('/signin')
 
     } catch (error) {
-      setError(error.response.data?.error?.message)
+      setError(error.response.data?.error)
     } finally {
       setLoading(false)
     }
@@ -121,8 +121,6 @@ const Profile = observer(function Profile() {
 
   return (
     <MainLayout title='Profile'>
-      {/* {user && <h2>User name: `${user.firstName} ${user.lastName}`</h2>} */}
-
       <div className={classes.root}>
         <Typography className={classes.title}>
           My Profile

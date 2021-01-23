@@ -64,7 +64,7 @@ const startServer = (config: IConfig) => {
       config
     )
 
-    const profileController = new ProfileController(services.errorService)
+    const profileController = new ProfileController(services.errorService, authController)
 
     return {
       authController,

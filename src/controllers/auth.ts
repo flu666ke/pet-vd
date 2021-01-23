@@ -143,8 +143,8 @@ export default class AuthController {
 
     const hashedPassword = await this.getHashedPassword(newPassword)
 
-    const updateUser = `UPDATE users SET password = '${hashedPassword}' WHERE id = ${restorePassword[0].userId}`
-    await DB.runQuery(updateUser)
+    const updateUserPassword = `UPDATE users SET password = '${hashedPassword}' WHERE id = ${restorePassword[0].userId}`
+    await DB.runQuery(updateUserPassword)
   }
 
   async logout(accessToken: string, DB: any) {
@@ -152,13 +152,12 @@ export default class AuthController {
     await DB.runQuery(deleteAccessToken)
   }
 
-  // Private Methods
-  private async getHashedPassword(password: string) {
+  async getHashedPassword(password: string) {
     const salt = await bcrypt.genSalt(parseInt(this.config.salt || '7'))
     return bcrypt.hashSync(password, salt)
   }
 
-  private comparePassword(password: string, hashedPassword: string): boolean {
+  comparePassword(password: string, hashedPassword: string): boolean {
     return bcrypt.compareSync(password, hashedPassword)
   }
 }
