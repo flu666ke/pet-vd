@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    boxShadow: '0 2px 4px 0 #c5ced8',
+    boxShadow: `0 2px 4px 0 ${theme.palette.primary.light}`,
     padding: '7px 70px'
   },
   linksList: {

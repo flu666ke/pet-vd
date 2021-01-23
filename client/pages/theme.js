@@ -8,6 +8,7 @@ const colors = {
   secondaryLight: '#376E6F',
   background: '#2F4454',
   error: red.A400,
+  warning: red.A400,
   success: green[600],
   grey: blueGrey[700],
   // darkGrey: '#616161',
@@ -27,7 +28,11 @@ const theme = createMuiTheme({
       light: colors.secondaryLight, // светло-зеленый
     },
     error: {
-      main: colors.error,
+      // main: colors.error,
+      main: colors.primaryLight,
+    },
+    warning: {
+      main: colors.warning,
     },
     success: {
       main: colors.success,
@@ -87,6 +92,16 @@ const theme = createMuiTheme({
     //   color: colors.grey
     // }
   },
+  overrides: {
+    MuiInput: {
+      input: {
+        "&::placeholder": {
+          color: "white"
+        },
+        color: "white", // if you also want to change the color of the input, this is the prop you'd use
+      }
+    }
+  }
 });
 
 export default theme;

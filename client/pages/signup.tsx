@@ -111,7 +111,7 @@ export default function SignUp() {
                 <Button
                   fullWidth
                   disabled={!isValid}
-                  color="secondary"
+                  color="primary"
                   size="normal"
                   type="submit"
                   loading={loading}

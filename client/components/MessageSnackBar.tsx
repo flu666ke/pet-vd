@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.palette.success.main
   },
   [messagesTypes.error]: {
-    backgroundColor: theme.palette.error.main
+    backgroundColor: theme.palette.warning.main
   },
   icon: {
     fontSize: 20,

@@ -10,7 +10,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   label: {
     color: theme.palette.primary.light,
-  }
+  },
+  input: {
+    color: theme.palette.primary.light,
+  },
 }))
 
 interface PasswordTextFieldProps {
@@ -31,7 +34,7 @@ export default function PasswordTextField(props: PasswordTextFieldProps) {
   return (
     <TextField
       type={isPasswordVisible ? 'text' : 'password'}
-      color="secondary"
+      color="primary"
       InputLabelProps={{
         shrink: true,
         classes: {
@@ -40,7 +43,8 @@ export default function PasswordTextField(props: PasswordTextFieldProps) {
       }}
       InputProps={{
         classes: {
-          notchedOutline: classes.notchedOutline
+          notchedOutline: classes.notchedOutline,
+          input: classes.input
         },
         endAdornment: (
           <InputAdornment position="end">

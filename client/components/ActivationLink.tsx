@@ -8,15 +8,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   title: {
     ...theme.typography.subtitle1,
     color: theme.palette.primary.light,
-    marginRight: 60
+    textAlign: 'center'
   },
 }));
 
 export default function ActivationLinkExpired({ email }: { email: string }) {
   const classes = useStyles();
-
   const [loading, setLoading] = useState(false)
-
   const { setNotice } = useNoticeStore()
 
   const getActivationLink = async () => {

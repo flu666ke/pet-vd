@@ -9,7 +9,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   label: {
     color: theme.palette.primary.light,
-  }
+  },
+  input: {
+    color: theme.palette.primary.light,
+  },
 }))
 
 interface TextFieldProps {
@@ -24,7 +27,7 @@ export default function TextField(props: TextFieldProps) {
 
   return (
     <MaterialTextField
-      color="secondary"
+      color="primary"
       InputLabelProps={{
         shrink: true,
         classes: {
@@ -33,7 +36,8 @@ export default function TextField(props: TextFieldProps) {
       }}
       InputProps={{
         classes: {
-          notchedOutline: classes.notchedOutline
+          notchedOutline: classes.notchedOutline,
+          input: classes.input
         }
       }}
       helperText={meta.touched && meta.error}
