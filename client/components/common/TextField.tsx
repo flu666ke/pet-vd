@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { useField } from 'formik'
 import { TextField as MaterialTextField } from '@material-ui/core'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -19,6 +19,7 @@ interface TextFieldProps {
   label: string
   name: string
   placeholder: string
+  onChange?: (e: ChangeEvent<any>) => void
 }
 
 export default function TextField(props: TextFieldProps) {

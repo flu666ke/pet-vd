@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { Formik, Form } from 'formik';
@@ -55,13 +55,19 @@ export default function SignIn() {
   const [isActivationLinkShow, setIsActivationLinkShow] = useState(false)
   const [email, setEmail] = useState('')
 
-
   useEffect(() => {
     if (error && error.code === 'EXPIRED_LINK') {
-      // setIsActivationLinkShow(true)
-      console.log({ email })
+      setIsActivationLinkShow(true)
     }
   }, []);
+
+  const handleChangeEmail = (
+    e: ChangeEvent<HTMLInputElement>,
+    setFieldValue: (field: string, value: any) => void
+  ) => {
+    setEmail(e.target?.value);
+    setFieldValue('email', e.target?.value)
+  };
 
   const handleSubmit = async (loginData: LoginData) => {
 
@@ -99,13 +105,14 @@ export default function SignIn() {
             password: ''
           }}
         >
-          {({ values, isValid }) => (
+          {({ values, isValid, setFieldValue }) => (
             <Form>
               <FormControl fullWidth className={classes.formControl}>
                 <TextField
                   name="email"
                   label="Email"
                   placeholder="Enter Email"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => handleChangeEmail(e, setFieldValue)}
                 />
               </FormControl>
               <FormControl fullWidth className={classes.formControl}>

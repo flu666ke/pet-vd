@@ -31,7 +31,7 @@ export default function ActivationLinkExpired({ email }: { email: string }) {
 
   return (
     <>
-      <p className={classes.title}>Activation link expired. For a new activation link click here.</p>
+      <p className={classes.title}>Activation link expired. For a new activation link enter your email and click here.</p>
       <Button
         onClick={getActivationLink}
         fullWidth
@@ -39,6 +39,7 @@ export default function ActivationLinkExpired({ email }: { email: string }) {
         size="normal"
         type="submit"
         loading={loading}
+        disabled={!email}
       >
         Get activation link
         </Button>
