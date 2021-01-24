@@ -26,7 +26,7 @@ class DB {
     return this._instance || (this._instance = new this())
   }
 
-  static async runQuery(query: string) {
+  static async runQuery(query: string): Promise<unknown | any> {
     return new Promise((resolve, reject) => {
       this.instance.cnn.query(query, (err: any, results: Object[], fields: any) => {
         if (err) {
@@ -67,7 +67,7 @@ class DB {
       )
 
       DB.runQuery(
-        'CREATE TABLE IF NOT EXISTS `restorePasswords`(`userId` INT(10), `uuid` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
+        'CREATE TABLE IF NOT EXISTS `restorePasswords`(`userId` INT(10), `restorePasswordId` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
       )
     })
   }
@@ -75,4 +75,4 @@ class DB {
 
 export default DB
 
-// export type DataBase = typeof DB
+export type DataBase = typeof DB

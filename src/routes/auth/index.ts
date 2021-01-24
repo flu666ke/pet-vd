@@ -4,11 +4,12 @@ import Router from 'koa-router'
 import { User } from 'src/models/user'
 import AuthController from '../../controllers/auth'
 import { validateInputData } from '../../validators/auth/auth'
-import { UpdatePassword } from 'src/models/updatePassword'
+import { DataBase } from 'src/db'
+import { IUpdatePassword } from 'src/interfaces/updatePassword'
 
 export default function authRoutes(app: Koa, authController: AuthController) {
   const router = new Router()
-  const DB = app.context.db
+  const DB: DataBase = app.context.db
 
   async function signup(ctx: Context) {
     const { firstName, lastName, email, password } = <User>ctx.request.body
@@ -113,7 +114,7 @@ export default function authRoutes(app: Koa, authController: AuthController) {
   }
 
   async function restorePassword(ctx: Context) {
-    const { resetPasswordLink, newPassword } = <UpdatePassword>ctx.request.body
+    const { resetPasswordLink, newPassword } = <IUpdatePassword>ctx.request.body
     try {
       await authController.restorePassword(resetPasswordLink, newPassword, DB)
 

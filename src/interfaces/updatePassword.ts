@@ -1,4 +1,4 @@
-export interface UpdatePassword {
+export interface IUpdatePassword {
   resetPasswordLink: string
   newPassword: string
 }

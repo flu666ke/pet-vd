@@ -1,7 +1,8 @@
 import { User } from '../models/user'
 import ErrorService from 'src/module.error/errorService'
-import { UpdateProfile } from 'src/models/updateProfile'
 import AuthController from './auth'
+import { IUpdateProfile } from 'src/interfaces/updateProfile'
+import { DataBase } from 'src/db'
 
 export default class ProfileController {
   private errorService: ErrorService
@@ -12,9 +13,9 @@ export default class ProfileController {
     this.authController = authController
   }
 
-  async getProfile(accessToken: string, DB: any): Promise<User> {
+  async getProfile(accessToken: string, DB: DataBase): Promise<User> {
     const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
-    const user = await DB.runQuery(selectUser)
+    const user: User[] = await DB.runQuery(selectUser)
 
     if (!user) {
       this.errorService.unauthorized('User not authorized.')
@@ -23,11 +24,11 @@ export default class ProfileController {
     return user[0]
   }
 
-  async updateProfile(profile: UpdateProfile, accessToken: string, DB: any): Promise<User> {
+  async updateProfile(profile: IUpdateProfile, accessToken: string, DB: DataBase): Promise<User> {
     const { firstName, lastName, gender, newPassword, oldPassword } = profile
 
     const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
-    const user = await DB.runQuery(selectUser)
+    const user: User[] = await DB.runQuery(selectUser)
 
     if (!user) {
       this.errorService.unauthorized('User not authorized.')
@@ -53,9 +54,9 @@ export default class ProfileController {
     return updatedProfile[0]
   }
 
-  async deleteAccount(accessToken: string, DB: any): Promise<void> {
+  async deleteAccount(accessToken: string, DB: DataBase): Promise<void> {
     const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
-    const user = await DB.runQuery(selectUser)
+    const user: User[] = await DB.runQuery(selectUser)
 
     if (!user) {
       this.errorService.unauthorized('User not authorized.')

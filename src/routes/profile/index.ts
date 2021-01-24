@@ -1,14 +1,15 @@
-import { UpdateProfile } from '../../models/updateProfile'
 import Koa, { Context } from 'koa'
 import Router from 'koa-router'
 
 import ProfileController from 'src/controllers/profile'
 import { checkCookies } from '../../middleware/checkCookies'
 import serializeProfile from './serialization'
+import { IUpdateProfile } from 'src/interfaces/updateProfile'
+import { DataBase } from 'src/db'
 
 export default function profileRoutes(app: Koa, profileController: ProfileController) {
   const router = new Router()
-  const DB = app.context.db
+  const DB: DataBase = app.context.db
 
   async function getProfile(ctx: Context) {
     try {
@@ -35,7 +36,7 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
   async function updateProfile(ctx: Context) {
     try {
       const accessToken = ctx.cookies.get('accessToken')
-      const updateProfile = <UpdateProfile>ctx.request.body
+      const updateProfile = <IUpdateProfile>ctx.request.body
 
       const user = await profileController.updateProfile(updateProfile, accessToken!, DB)
 

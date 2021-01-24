@@ -5,6 +5,9 @@ import { IConfig } from 'src/config'
 import EmailService from 'src/module.email/emailService'
 import ErrorService from 'src/module.error/errorService'
 import HelperService from 'src/module.helper/helperService'
+import { DataBase } from 'src/db'
+import { Activation } from 'src/models/activation'
+import { RestorePassword } from 'src/models/restorePassword'
 
 export default class AuthController {
   private emailService: EmailService
@@ -20,7 +23,7 @@ export default class AuthController {
     this.config = config
   }
 
-  async signup({ firstName, lastName, email, password }: User, DB: any) {
+  async signup({ firstName, lastName, email, password }: User, DB: DataBase): Promise<void> {
     const selectEmail = `SELECT email FROM users WHERE email = '${email}'`
     const user = await DB.runQuery(selectEmail)
 
@@ -41,9 +44,9 @@ export default class AuthController {
     this.emailService.sendActivationLink(email, uuid)
   }
 
-  async accountActivation(activationId: string, DB: any) {
+  async accountActivation(activationId: string, DB: DataBase): Promise<{ uuid: string; expirationDate: string }> {
     const selectActivation = `SELECT * FROM activations WHERE activationId = '${activationId}'`
-    const activation = await DB.runQuery(selectActivation)
+    const activation: Activation[] = await DB.runQuery(selectActivation)
 
     if (!activation) {
       this.errorService.expiredLink('Activation link already used.')
@@ -70,7 +73,7 @@ export default class AuthController {
     return { uuid, expirationDate }
   }
 
-  async getActivationLink(email: string, DB: any) {
+  async getActivationLink(email: string, DB: DataBase): Promise<void> {
     const uuid = uuidv4()
 
     const expirationDate = this.helperService.getExpirationDate(1)
@@ -88,9 +91,9 @@ export default class AuthController {
     this.emailService.sendActivationLink(email!, uuid)
   }
 
-  async signin({ email, password }: User, DB: any) {
+  async signin({ email, password }: User, DB: DataBase) {
     const selectUser = `SELECT id, password, emailVerifiedAt FROM users WHERE email = '${email}'`
-    const user = await DB.runQuery(selectUser)
+    const user: User[] = await DB.runQuery(selectUser)
 
     if (!user) {
       this.errorService.unauthorized('User with that email does not exists. Please signup.')
@@ -107,31 +110,29 @@ export default class AuthController {
     const uuid = uuidv4()
     const expirationDate = this.helperService.getExpirationDate(1)
 
-    console.log(user[0])
-
     const insertAccessToken = `INSERT INTO accessTokens(userId, accessToken, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertAccessToken)
 
     return { user: user[0], uuid, expirationDate }
   }
 
-  async forgotPassword(email: string, DB: any) {
+  async forgotPassword(email: string, DB: DataBase): Promise<void> {
     const uuid = uuidv4()
 
     const expirationDate = this.helperService.getExpirationDate(1)
 
     const selectUser = `SELECT * FROM users WHERE email = '${email}'`
-    const user = await DB.runQuery(selectUser)
+    const user: User[] = await DB.runQuery(selectUser)
 
-    const insertRestorePasswordLink = `INSERT INTO restorePasswords(userId, uuid, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
+    const insertRestorePasswordLink = `INSERT INTO restorePasswords(userId, restorePasswordId, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertRestorePasswordLink)
 
     this.emailService.sendRestorePasswordLink(email, uuid)
   }
 
-  async restorePassword(resetPasswordLink: string, newPassword: string, DB: any) {
-    const selectRestorePassword = `SELECT * FROM restorePasswords WHERE uuid = '${resetPasswordLink}'`
-    const restorePassword = await DB.runQuery(selectRestorePassword)
+  async restorePassword(resetPasswordLink: string, newPassword: string, DB: DataBase): Promise<void> {
+    const selectRestorePassword = `SELECT * FROM restorePasswords WHERE restorePasswordId = '${resetPasswordLink}'`
+    const restorePassword: RestorePassword[] = await DB.runQuery(selectRestorePassword)
 
     if (!restorePassword) {
       this.errorService.unauthorized('Activation link already used.')
@@ -147,12 +148,12 @@ export default class AuthController {
     await DB.runQuery(updateUserPassword)
   }
 
-  async logout(accessToken: string, DB: any) {
+  async logout(accessToken: string, DB: DataBase): Promise<void> {
     const deleteAccessToken = `DELETE FROM accessTokens WHERE accessToken = '${accessToken}'`
     await DB.runQuery(deleteAccessToken)
   }
 
-  async getHashedPassword(password: string) {
+  async getHashedPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(parseInt(this.config.salt || '7'))
     return bcrypt.hashSync(password, salt)
   }
