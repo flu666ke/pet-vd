@@ -3,7 +3,8 @@ import Router from 'koa-router'
 
 import { User } from 'src/models/user'
 import AuthController from '../../controllers/auth'
-import { validateInputData } from '../../validators/auth/auth'
+import { validateInputData } from '../../middleware/validateInputData'
+import { checkCookies } from '../../middleware/checkCookies'
 import { DataBase } from 'src/db'
 import { IUpdatePassword } from 'src/interfaces/updatePassword'
 
@@ -153,13 +154,17 @@ export default function authRoutes(app: Koa, authController: AuthController) {
     }
   }
 
-  router.post('/signup', validateInputData, signup)
-  router.post('/account-activation', accountActivation)
-  router.post('/activation-link', getActivationLink)
-  router.post('/signin', signin)
-  router.post('/forgot-password', forgotPassword)
-  router.post('/restore-password', restorePassword)
-  router.delete('/logout', logout)
+  router.post('/signup', validateInputData('../routes/auth/schemas/SignUp.json'), signup)
+  router.post(
+    '/account-activation',
+    validateInputData('../routes/auth/schemas/AccountActivation.json'),
+    accountActivation
+  )
+  router.post('/activation-link', validateInputData('../routes/auth/schemas/ActivationLink.json'), getActivationLink)
+  router.post('/signin', validateInputData('../routes/auth/schemas/SignIn.json'), signin)
+  router.post('/forgot-password', validateInputData('../routes/auth/schemas/ForgotPassword.json'), forgotPassword)
+  router.post('/restore-password', validateInputData('../routes/auth/schemas/RestorePassword.json'), restorePassword)
+  router.delete('/logout', checkCookies, logout)
 
   app.use(router.routes())
 }

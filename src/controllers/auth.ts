@@ -124,6 +124,10 @@ export default class AuthController {
     const selectUser = `SELECT * FROM users WHERE email = '${email}'`
     const user: User[] = await DB.runQuery(selectUser)
 
+    if (!user) {
+      this.errorService.unauthorized('User with that email does not exists. Please signup.')
+    }
+
     const insertRestorePasswordLink = `INSERT INTO restorePasswords(userId, restorePasswordId, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertRestorePasswordLink)
 

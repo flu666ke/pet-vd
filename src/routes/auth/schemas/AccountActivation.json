@@ -1,0 +1,8 @@
+{
+  "properties": {
+    "activationId": {
+      "type": "string"
+    }
+  },
+  "required": ["activationId"]
+}
