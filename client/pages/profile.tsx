@@ -21,7 +21,6 @@ import PasswordTextField from '../components/common/PasswordTextField';
 import Button from '../components/common/Button';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import API from '../services/api';
-import { withAuth } from '../hocs/withAuth';
 import { withAuthServerSideProps } from '../hocs/withAuthServerSideProps';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -253,5 +252,5 @@ const Profile = observer(function Profile() {
   )
 })
 
-export default withAuth(Profile)
+export default Profile
 export const getServerSideProps: GetServerSideProps = withAuthServerSideProps();

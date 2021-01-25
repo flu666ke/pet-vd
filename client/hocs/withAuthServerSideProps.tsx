@@ -2,6 +2,13 @@ export function withAuthServerSideProps(getServerSidePropsFunc?: Function) {
   return async (ctx: any) => {
     const { props } = await getUser(ctx);
 
+    if (!props.hydrationData.user) {
+      ctx.res.writeHead(302, {
+        Location: '/signin',
+      });
+      ctx.res.end();
+    }
+
     if (getServerSidePropsFunc) {
       return { props: { data: await getServerSidePropsFunc(ctx) } };
     }

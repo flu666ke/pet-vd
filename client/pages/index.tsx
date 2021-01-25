@@ -2,7 +2,6 @@ import { GetServerSideProps } from "next";
 
 import { HomePage } from "../components/HomePage";
 import { MainLayout } from '../components/MainLayout';
-import { withAuth } from "../hocs/withAuth";
 import { withAuthServerSideProps } from "../hocs/withAuthServerSideProps";
 
 const Index = () => {
@@ -11,6 +10,6 @@ const Index = () => {
   </MainLayout>
 }
 
-export default withAuth(Index)
+export default Index
 export const getServerSideProps: GetServerSideProps = withAuthServerSideProps();
 
