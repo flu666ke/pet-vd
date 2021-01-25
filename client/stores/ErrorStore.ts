@@ -31,9 +31,10 @@ export class ErrorStore {
   }
 
   hydrate(error?: ErrorHydration) {
+    console.log('hydrate--', error)
     if (error) {
-      console.log('ErrorStore -- hydrate -- ', this.error)
       this.error = error
+      console.log('ErrorStore -- hydrate -- ', this.error)
     }
   }
 }

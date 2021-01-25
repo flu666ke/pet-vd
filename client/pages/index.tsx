@@ -4,6 +4,9 @@ import { useRouter } from 'next/router'
 import { useEffect } from "react";
 import { HomePage } from "../components/HomePage";
 import { MainLayout } from '../components/MainLayout';
+import withAuth from "../hocs/withAuth";
+import { withAuthComponent } from "../hocs/withAuthComponent";
+import { withAuthServerSideProps } from "../hocs/withAuthServerSideProps";
 import { useErrorStore } from "../providers/RootStoreProvider";
 
 const Index = observer(function Index(props: any) {
@@ -12,6 +15,8 @@ const Index = observer(function Index(props: any) {
 
   const router = useRouter()
   const { error } = useErrorStore();
+
+  console.log('error from store --- ', error)
 
   useEffect(() => {
     if (error && error.message === 'Unauthorized') {
@@ -24,36 +29,39 @@ const Index = observer(function Index(props: any) {
   </MainLayout>
 })
 
-export default Index
+// export default Index
 
-export const getServerSideProps: GetServerSideProps = async function getServerSideProps(
-  ctx
-) {
+export default withAuthComponent(Index)
+export const getServerSideProps = withAuthServerSideProps();
 
-  let errors = null
-  let profile = null
+// export const getServerSideProps: GetServerSideProps = async function getServerSideProps(
+//   ctx
+// ) {
 
-  const cookie = ctx.req.headers.cookie
-  console.log({ cookie })
+//   let errors = null
+//   let profile = null
 
-  const response = await fetch(`http://localhost:5000`, { headers: { cookie: cookie! } })
+//   const cookie = ctx.req.headers.cookie
+//   console.log({ cookie })
 
-  if (response.status === 200) {
-    const { user } = await response.json()
-    profile = user
-  } else if (response.status === 401) {
-    const { error } = await response.json()
+//   const response = await fetch(`http://localhost:5000`, { headers: { cookie: cookie! } })
 
-    console.log({ error })
-    errors = response.statusText
-  }
+//   if (response.status === 200) {
+//     const { user } = await response.json()
+//     profile = user
+//   } else if (response.status === 401) {
+//     const { error } = await response.json()
 
-  return {
-    props: {
-      hydrationData: {
-        error: errors,
-        user: profile
-      },
-    },
-  };
-};
+//     console.log({ error })
+//     errors = response.statusText
+//   }
+
+//   return {
+//     props: {
+//       hydrationData: {
+//         error: errors,
+//         user: profile
+//       },
+//     },
+//   };
+// };

@@ -69,6 +69,10 @@ class DB {
       DB.runQuery(
         'CREATE TABLE IF NOT EXISTS `restorePasswords`(`userId` INT(10), `restorePasswordId` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
       )
+
+      // DB.runQuery(
+      //   'CREATE TABLE IF NOT EXISTS `messages`(`id` int AUTO_INCREMENT, `message` VARCHAR(255), `senderId` INT(10), FOREIGN KEY (senderId) REFERENCES `users` (id) ON DELETE CASCADE), `recipientId` INT(10), FOREIGN KEY (recipientId) REFERENCES `users` (id) ON DELETE CASCADE)'
+      // )
     })
   }
 }
