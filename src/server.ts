@@ -2,6 +2,7 @@ import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
 import cors from 'koa2-cors'
 import logger from 'koa-logger'
+import { koaSwagger } from 'koa2-swagger-ui'
 
 import DB from './db'
 import { IConfig } from './config'
@@ -13,6 +14,7 @@ import HelperService from './module.helper/helperService'
 import ProfileController from './controllers/profile'
 import profileRoutes from './routes/profile'
 import authRoutes from './routes/auth'
+import swagger from './swagger'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -28,6 +30,16 @@ const startServer = (config: IConfig) => {
     app.use(logger())
 
     app.use(router.routes())
+
+    app.use(
+      koaSwagger({
+        routePrefix: '/swagger', // host at /swagger instead of default /docs
+        swaggerOptions: {
+          url: '/swagger.json' // example path to json
+        }
+      })
+    )
+    app.use(swagger.routes())
 
     app
       .listen(config.port, async () => {

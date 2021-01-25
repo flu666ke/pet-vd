@@ -27,6 +27,7 @@
     "koa-logger": "^3.2.1",
     "koa-router": "^10.0.0",
     "koa2-cors": "^2.0.6",
+    "koa2-swagger-ui": "^5.0.5",
     "mobx": "^6.0.4",
     "mobx-react-lite": "^3.1.6",
     "mysql": "^2.18.1",
@@ -35,6 +36,7 @@
     "nodemailer": "^6.4.16",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "swagger-jsdoc": "^6.0.1",
     "uuid": "^8.3.2",
     "yup": "^0.32.8"
   },
@@ -52,6 +54,7 @@
     "@types/node": "^14.14.9",
     "@types/nodemailer": "^6.4.0",
     "@types/react": "^17.0.0",
+    "@types/swagger-jsdoc": "^6.0.0",
     "@types/uuid": "^8.3.0",
     "nodemon": "^2.0.6",
     "ts-node": "^9.1.0",
