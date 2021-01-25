@@ -32,13 +32,18 @@ export default class AuthController {
     }
 
     const hashedPassword = await this.getHashedPassword(password)
-    const insertUser = `INSERT INTO users(firstName, lastName, email, password) VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}')`
-    await DB.runQuery(insertUser)
+
+    const insertUser = `INSERT INTO users( email, password) VALUES ( '${email}', '${hashedPassword}')`
+    const createdUser = await DB.runQuery(insertUser)
+
+    const insertProfile = `INSERT INTO profiles(userId, firstName, lastName) VALUES (${createdUser.insertId},'${firstName}', '${lastName}')`
+    await DB.runQuery(insertProfile)
 
     const uuid = uuidv4()
 
     const expirationDate = this.helperService.getExpirationDate(1)
-    const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES (LAST_INSERT_ID(), '${uuid}', '${expirationDate}')`
+
+    const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES (${createdUser.insertId}, '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertActivation)
 
     this.emailService.sendActivationLink(email, uuid)
@@ -113,7 +118,7 @@ export default class AuthController {
     const insertAccessToken = `INSERT INTO accessTokens(userId, accessToken, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertAccessToken)
 
-    return { user: user[0], uuid, expirationDate }
+    return { uuid, expirationDate }
   }
 
   async forgotPassword(email: string, DB: DataBase): Promise<void> {
@@ -143,13 +148,16 @@ export default class AuthController {
     }
 
     if (new Date() > restorePassword[0].expiresAt) {
-      this.errorService.unauthorized('Confirmation time is expired.')
+      this.errorService.unauthorized('Restore password link is expired.')
     }
 
     const hashedPassword = await this.getHashedPassword(newPassword)
 
     const updateUserPassword = `UPDATE users SET password = '${hashedPassword}' WHERE id = ${restorePassword[0].userId}`
     await DB.runQuery(updateUserPassword)
+
+    const deleteRestorePassword = `DELETE FROM restorePasswords WHERE restorePasswordId = '${resetPasswordLink}'`
+    await DB.runQuery(deleteRestorePassword)
   }
 
   async logout(accessToken: string, DB: DataBase): Promise<void> {

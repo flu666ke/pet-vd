@@ -21,7 +21,10 @@ export default class ProfileController {
       this.errorService.unauthorized('User not authorized.')
     }
 
-    return user[0]
+    const selectProfile = `SELECT * FROM profiles WHERE userId = ${user[0].id}`
+    const profile: User[] = await DB.runQuery(selectProfile)
+
+    return profile[0]
   }
 
   async updateProfile(profile: IUpdateProfile, accessToken: string, DB: DataBase): Promise<User> {
@@ -34,7 +37,7 @@ export default class ProfileController {
       this.errorService.unauthorized('User not authorized.')
     }
 
-    const updateProfile = `UPDATE users SET firstName = '${firstName}', lastName = '${lastName}', gender = '${gender}' WHERE id = ${user[0].id}`
+    const updateProfile = `UPDATE profiles SET firstName = '${firstName}', lastName = '${lastName}', gender = '${gender}' WHERE userId = ${user[0].id}`
     await DB.runQuery(updateProfile)
 
     if (newPassword && oldPassword) {
@@ -48,7 +51,7 @@ export default class ProfileController {
       await DB.runQuery(updateUserPassword)
     }
 
-    const selectUpdatedProfile = `SELECT * FROM users WHERE id = ${user[0].id}`
+    const selectUpdatedProfile = `SELECT * FROM profiles WHERE userId = ${user[0].id}`
     const updatedProfile = await DB.runQuery(selectUpdatedProfile)
 
     return updatedProfile[0]

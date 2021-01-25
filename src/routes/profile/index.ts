@@ -15,12 +15,10 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
     try {
       const accessToken = ctx.cookies.get('accessToken')
 
-      const user = await profileController.getProfile(accessToken!, DB)
-
-      console.log({ user })
+      const profile = await profileController.getProfile(accessToken!, DB)
 
       ctx.body = {
-        user: serializeProfile(user)
+        user: serializeProfile(profile)
       }
     } catch (error) {
       ctx.status = error.httpStatus || 500
@@ -38,11 +36,11 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
       const accessToken = ctx.cookies.get('accessToken')
       const updateProfile = <IUpdateProfile>ctx.request.body
 
-      const user = await profileController.updateProfile(updateProfile, accessToken!, DB)
+      const profile = await profileController.updateProfile(updateProfile, accessToken!, DB)
 
       ctx.body = {
         message: `Account updated successfully`,
-        user: serializeProfile(user)
+        user: serializeProfile(profile)
       }
     } catch (error) {
       ctx.status = error.httpStatus || 500

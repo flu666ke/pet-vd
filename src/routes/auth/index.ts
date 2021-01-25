@@ -75,13 +75,12 @@ export default function authRoutes(app: Koa, authController: AuthController) {
     const { email, password } = <User>ctx.request.body
 
     try {
-      const { user, uuid, expirationDate } = await authController.signin({ email, password }, DB)
+      const { uuid, expirationDate } = await authController.signin({ email, password }, DB)
 
       ctx.cookies.set('accessToken', uuid, { expires: new Date(expirationDate) })
 
       ctx.body = {
-        message: 'Login successful',
-        user
+        message: 'Login successful'
       }
     } catch (error) {
       ctx.status = error.httpStatus || 500
