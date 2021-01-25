@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import {
@@ -21,6 +21,8 @@ import PasswordTextField from '../components/common/PasswordTextField';
 import Button from '../components/common/Button';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import API from '../services/api';
+import { withAuth } from '../hocs/withAuth';
+import { withAuthServerSideProps } from '../hocs/withAuthServerSideProps';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -67,18 +69,12 @@ interface UpdateProfile {
 const Profile = observer(function Profile() {
   const classes = useStyles();
   const router = useRouter()
-  const { error, setError } = useErrorStore();
+  const { setError } = useErrorStore();
   const { setNotice } = useNoticeStore();
   const { user, removeUser } = useUserStore();
 
   const [isLoading, setLoading] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  useEffect(() => {
-    if (error && error.message === 'Unauthorized') {
-      router.push('/signin')
-    }
-  }, [])
 
   const openConfirmDialog = () => {
     setIsDeleteDialogOpen(true);
@@ -89,11 +85,9 @@ const Profile = observer(function Profile() {
   };
 
   const handleSubmit = async (profileData: UpdateProfile) => {
-
     try {
       setLoading(true)
       const response = await API.updateProfile(profileData)
-
       setNotice(response.message)
     } catch (error) {
       setError(error.response.data?.error)
@@ -103,7 +97,6 @@ const Profile = observer(function Profile() {
   };
 
   const deleteAccount = async () => {
-
     try {
       setLoading(true)
       const response = await API.deleteAccount()
@@ -111,7 +104,6 @@ const Profile = observer(function Profile() {
       closeConfirmDialog()
       removeUser()
       router.push('/signin')
-
     } catch (error) {
       setError(error.response.data?.error)
     } finally {
@@ -162,10 +154,8 @@ const Profile = observer(function Profile() {
                   name="lastName"
                 />
               </FormControl>
-
               <div className={classes.genderBlock}>
                 <FormControl component="fieldset" >
-
                   <RadioGroup
                     name="gender"
                     value={values.gender}
@@ -193,7 +183,6 @@ const Profile = observer(function Profile() {
                   </RadioGroup>
                 </FormControl>
               </div>
-
               <Typography className={classes.title}>
                 Change Password
                 </Typography>
@@ -264,33 +253,5 @@ const Profile = observer(function Profile() {
   )
 })
 
-export default Profile
-
-export const getServerSideProps: GetServerSideProps = async function getServerSideProps(
-  ctx
-) {
-
-  let error = null
-  let profile = null
-
-  const cookie = ctx.req.headers.cookie
-  console.log({ cookie })
-
-  const response = await fetch(`http://localhost:5000`, { headers: { cookie: cookie! } })
-
-  if (response.status === 200) {
-    const { user } = await response.json()
-    profile = user
-  } else if (response.status === 401) {
-    error = response.statusText
-  }
-
-  return {
-    props: {
-      hydrationData: {
-        error: error,
-        user: profile
-      },
-    },
-  };
-};
+export default withAuth(Profile)
+export const getServerSideProps: GetServerSideProps = withAuthServerSideProps();

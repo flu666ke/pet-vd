@@ -1,21 +1,19 @@
-import React from "react";
-
 export function withAuthServerSideProps(getServerSidePropsFunc?: Function) {
-  return async (context: any) => {
-    const user = await getUser(context);
+  return async (ctx: any) => {
+    const { props } = await getUser(ctx);
+
     if (getServerSidePropsFunc) {
-      return { props: { user, data: await getServerSidePropsFunc(context, user) } };
+      return { props: { data: await getServerSidePropsFunc(ctx) } };
     }
-    return { props: { user, data: { props: { user } } } };
+    return { props };
   }
 }
 
 async function getUser(ctx: any) {
-  let errors = null
+  let responseError = null
   let profile = null
 
   const cookie = ctx.req.headers.cookie
-  console.log({ cookie })
 
   const response = await fetch(`http://localhost:5000`, { headers: { cookie: cookie! } })
 
@@ -25,14 +23,13 @@ async function getUser(ctx: any) {
   } else if (response.status === 401) {
     const { error } = await response.json()
 
-    console.log({ error })
-    errors = response.statusText
+    responseError = response.statusText
   }
 
   return {
     props: {
       hydrationData: {
-        error: errors,
+        error: responseError ? { message: responseError, httpStatus: response.status, code: 'some code' } : responseError,
         user: profile
       },
     },

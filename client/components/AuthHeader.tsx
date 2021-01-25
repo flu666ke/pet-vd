@@ -105,8 +105,8 @@ export default function AuthHeader() {
           <Image
             src="/logo.png"
             alt="logo"
-            width={90}
-            height={60}
+            width={80}
+            height={50}
           />
         </a>
       </Link>
