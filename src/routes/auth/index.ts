@@ -7,10 +7,15 @@ import { validateInputData } from '../../middleware/validateInputData'
 import { checkCookies } from '../../middleware/checkCookies'
 import { DataBase } from 'src/db'
 import { IUpdatePassword } from 'src/interfaces/updatePassword'
+import { DocsModule } from 'src/module.docs/docsService'
 
-export default function authRoutes(app: Koa, authController: AuthController) {
+export default function authRoutes(app: Koa, authController: AuthController, docs: DocsModule) {
   const router = new Router()
   const DB: DataBase = app.context.db
+
+  // Documentation
+  docs.composeWithDirectory(__dirname + '/docs')
+  docs.composeWithDirectory(__dirname + '/schemas', '/components/schemas')
 
   async function signup(ctx: Context) {
     const { firstName, lastName, email, password } = <User>ctx.request.body
@@ -153,16 +158,28 @@ export default function authRoutes(app: Koa, authController: AuthController) {
     }
   }
 
-  router.post('/signup', validateInputData('../routes/auth/schemas/SignUp.json'), signup)
+  router.post('/signup', validateInputData('../routes/auth/docs/components/schemas/SignUp.json'), signup)
   router.post(
     '/account-activation',
-    validateInputData('../routes/auth/schemas/AccountActivation.json'),
+    validateInputData('../routes/auth/docs/components/schemas/AccountActivation.json'),
     accountActivation
   )
-  router.post('/activation-link', validateInputData('../routes/auth/schemas/ActivationLink.json'), getActivationLink)
-  router.post('/signin', validateInputData('../routes/auth/schemas/SignIn.json'), signin)
-  router.post('/forgot-password', validateInputData('../routes/auth/schemas/ForgotPassword.json'), forgotPassword)
-  router.post('/restore-password', validateInputData('../routes/auth/schemas/RestorePassword.json'), restorePassword)
+  router.post(
+    '/activation-link',
+    validateInputData('../routes/auth/docs/components/schemas/ActivationLink.json'),
+    getActivationLink
+  )
+  router.post('/signin', validateInputData('../routes/auth/docs/components/schemas/SignIn.json'), signin)
+  router.post(
+    '/forgot-password',
+    validateInputData('../routes/auth/docs/components/schemas/ForgotPassword.json'),
+    forgotPassword
+  )
+  router.post(
+    '/restore-password',
+    validateInputData('../routes/auth/docs/components/schemas/RestorePassword.json'),
+    restorePassword
+  )
   router.delete('/logout', checkCookies, logout)
 
   app.use(router.routes())

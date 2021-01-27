@@ -2,7 +2,6 @@ import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
 import cors from 'koa2-cors'
 import logger from 'koa-logger'
-import { koaSwagger } from 'koa2-swagger-ui'
 
 import DB from './db'
 import { IConfig } from './config'
@@ -11,10 +10,10 @@ import Router from 'koa-router'
 import EmailService from './module.email/emailService'
 import ErrorService from './module.error/errorService'
 import HelperService from './module.helper/helperService'
+import docsModule from './module.docs/docsService'
 import ProfileController from './controllers/profile'
 import profileRoutes from './routes/profile'
 import authRoutes from './routes/auth'
-import swagger from './swagger'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -25,21 +24,13 @@ const startServer = (config: IConfig) => {
     DB.instance
     app.context.db = DB
 
+    const docs = docsModule(app)
+
     app.use(bodyParser())
     app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
     app.use(logger())
 
     app.use(router.routes())
-
-    app.use(
-      koaSwagger({
-        routePrefix: '/swagger', // host at /swagger instead of default /docs
-        swaggerOptions: {
-          url: '/swagger.json' // example path to json
-        }
-      })
-    )
-    app.use(swagger.routes())
 
     app
       .listen(config.port, async () => {
@@ -50,7 +41,8 @@ const startServer = (config: IConfig) => {
       })
 
     return {
-      app
+      app,
+      docs
     }
   })()
 
@@ -86,8 +78,11 @@ const startServer = (config: IConfig) => {
 
   // Routes
   const routes = (() => {
-    const auth = authRoutes(core.app, controllers.authController)
+    const auth = authRoutes(core.app, controllers.authController, core.docs)
     const profile = profileRoutes(core.app, controllers.profileController)
+
+    core.docs.createSwaggerDocs()
+
     return {
       auth,
       profile

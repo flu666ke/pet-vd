@@ -1,0 +1,200 @@
+{
+  "/signup": {
+    "post": {
+      "description": "User registration",
+      "tags": ["Authorization"],
+      "parameters": [],
+      "requestBody": {
+        "description": "Data for user registration",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SignUp"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUp"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+    "/account-activation": {
+      "post": {
+        "description": "Account Activation",
+        "tags": ["Authorization"],
+        "parameters": [],
+        "requestBody": {
+          "description": "Activation id",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountActivation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountActivation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/activation-link": {
+      "post": {
+        "description": "Get activation link",
+        "tags": ["Authorization"],
+        "parameters": [],
+        "requestBody": {
+          "description": "Activation link",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivationLink"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivationLink"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/signin": {
+      "post": {
+        "description": "Login",
+        "tags": ["Authorization"],
+        "parameters": [],
+        "requestBody": {
+          "description": "User login",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignIn"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/forgot-password": {
+      "post": {
+        "description": "Forgot password",
+        "tags": ["Authorization"],
+        "parameters": [],
+        "requestBody": {
+          "description": "Forgot password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForgotPassword"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/restore-password": {
+      "post": {
+        "description": "Restore password",
+        "tags": ["Authorization"],
+        "parameters": [],
+        "requestBody": {
+          "description": "Restore password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestorePassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestorePassword"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "delete": {
+        "description": "Logout",
+        "tags": ["Authorization"],
+        "parameters": [],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "message": "Success"
+              }
+            }
+          }
+        }
+      }
+    }
+}

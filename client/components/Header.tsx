@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     boxShadow: `0 2px 4px 0 ${theme.palette.primary.light}`,
-    padding: '7px 70px'
+    padding: '7px 70px',
+    backgroundColor: theme.palette.primary.main
   },
   linksList: {
     display: 'flex',
@@ -27,17 +28,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   link: {
+    ...theme.typography.subtitle2,
     color: theme.palette.primary.light,
     textTransform: 'uppercase',
     textDecoration: 'none'
   },
   logoutButton: {
+    ...theme.typography.subtitle2,
     color: theme.palette.primary.light,
     textTransform: 'uppercase',
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.primary.main,
     border: 'none',
     outline: 'none',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    fontFamily: 'Roboto'
   }
 }));
 

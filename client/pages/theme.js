@@ -45,63 +45,30 @@ const theme = createMuiTheme({
     }
   },
   typography: {
-    // h1: {
-    //   fontSize: 50,
-    //   fontWeight: 700,
-    //   color: colors.primary
-    // },
     h2: {
       fontSize: 32,
       fontWeight: 600,
       textTransform: 'uppercase',
     },
-    // h3: {
-    //   fontSize: 26,
-    //   fontWeight: 700,
-    //   textTransform: 'uppercase',
-    //   color: colors.grey
-    // },
-    // menu: {
-    //   fontSize: 18,
-    //   fontWeight: 500,
-    //   color: colors.secondary
-    // },
     subtitle1: {
       fontSize: 16,
       fontWeight: 400,
     },
-    // caption: {
-    //   fontSize: 12,
-    //   fontWeight: 400,
-    //   color: colors.grey
-    // },
-    // button: {
-    //   fontSize: 18,
-    //   fontWeight: 500,
-    //   textTransform: 'uppercase'
-    // },
-    // tabs: {
-    //   fontSize: 14,
-    //   fontWeight: 500,
-    //   textTransform: 'uppercase',
-    //   color: colors.grey
-    // },
-    // table: {
-    //   fontSize: 14,
-    //   fontWeight: 400,
-    //   color: colors.grey
-    // }
+    subtitle2: {
+      fontSize: 15,
+      fontWeight: 500,
+    },
   },
-  overrides: {
-    MuiInput: {
-      input: {
-        "&::placeholder": {
-          color: "white"
-        },
-        color: "white", // if you also want to change the color of the input, this is the prop you'd use
-      }
-    }
-  }
+  // overrides: {
+  //   MuiInput: {
+  //     input: {
+  //       "&::placeholder": {
+  //         color: "white"
+  //       },
+  //       color: "white", // if you also want to change the color of the input, this is the prop you'd use
+  //     }
+  //   }
+  // }
 });
 
 export default theme;

@@ -1,5 +1,4 @@
-import { makeStyles, Theme } from '@material-ui/core';
-import { useState } from 'react'
+import { Card, CardContent, makeStyles, Theme, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) => ({
   title: {
@@ -7,6 +6,23 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.primary.light,
     textAlign: 'center'
   },
+  profileBlock: {
+    margin: 15,
+    padding: 10,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.light,
+    cursor: 'pointer',
+    // "&:hover": {
+    //   background: theme.palette.primary.light,
+    //   color: theme.palette.primary.main,
+    // },
+    '&:first-child': {
+      marginTop: 40
+    }
+  },
+  button: {
+    backgroundColor: theme.palette.secondary.main
+  }
 }));
 
 interface Profile {
@@ -19,29 +35,29 @@ interface Profile {
 const profiles = [
   { id: 1, firstName: 'Den', lastName: 'Korn', gender: 'X' },
   { id: 2, firstName: 'Ann', lastName: 'Rope', gender: 'X' },
-  { id: 3, firstName: 'Bzden', lastName: 'Knife', gender: 'X' },
+  { id: 3, firstName: 'Bill', lastName: 'Knife', gender: 'X' },
 ]
 
-export default function Profiles() {
+export default function Profiles({ openChatWindow }: any) {
   const classes = useStyles();
 
-  const [isChatOpen, setIsChatOpen] = useState(false)
-
-  const openChat = () => {
-
-  }
-
   const renderProfiles = (profiles: Profile[]) => profiles.map(({ id, firstName, lastName, gender }: Profile) => (
-
-    <div key={id} onClick={openChat}>
-      <p>{firstName} {lastName}</p>
-      {gender && <p>{gender}</p>}
-    </div>
+    <Card raised className={classes.profileBlock} key={id} onClick={openChatWindow}>
+      <CardContent>
+        <Typography className={classes.title}>
+          {firstName} {lastName}
+        </Typography>
+        {gender &&
+          <Typography className={classes.title}>
+            {gender}
+          </Typography>}
+      </CardContent>
+    </Card>
   ));
 
   return (
-    <div>
+    <>
       {renderProfiles(profiles)}
-    </div>
+    </>
   );
 };

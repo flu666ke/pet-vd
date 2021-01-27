@@ -19,6 +19,7 @@ interface TextFieldProps {
   label: string
   name: string
   placeholder: string
+  value?: string
   onChange?: (e: ChangeEvent<any>) => void
 }
 
