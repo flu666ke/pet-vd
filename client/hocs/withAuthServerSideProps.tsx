@@ -1,6 +1,6 @@
 export function withAuthServerSideProps(getServerSidePropsFunc?: Function) {
   return async (ctx: any) => {
-    const { props } = await getUser(ctx);
+    const { props } = await getProfile(ctx);
 
     if (!props.hydrationData.user) {
       ctx.res.writeHead(302, {
@@ -16,7 +16,7 @@ export function withAuthServerSideProps(getServerSidePropsFunc?: Function) {
   }
 }
 
-async function getUser(ctx: any) {
+async function getProfile(ctx: any) {
   let responseError = null
   let profile = null
 
