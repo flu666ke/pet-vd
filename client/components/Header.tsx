@@ -104,7 +104,7 @@ export default function AuthHeader() {
 
   return (
     <header className={classes.root}>
-      <Link href="/home">
+      <Link href="/">
         <a>
           <Image
             src="/logo.png"

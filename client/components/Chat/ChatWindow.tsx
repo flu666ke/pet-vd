@@ -1,4 +1,5 @@
-import { Grid, makeStyles, TextField, Theme } from '@material-ui/core';
+import { Grid, IconButton, makeStyles, TextField, Theme } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Button from '../common/Button';
 
@@ -9,6 +10,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.palette.background.default,
   },
   chatWindow: {
+    position: 'relative',
     height: 400,
     backgroundColor: theme.palette.background.default,
     border: `2px solid ${theme.palette.primary.main}`,
@@ -60,6 +62,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '96%',
     color: theme.palette.primary.light,
   },
+  closeButton: {
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.secondary.light,
+    position: 'absolute',
+    top: 0,
+    left: 0
+  },
 }));
 
 const chats = [
@@ -71,7 +80,7 @@ const chats = [
   { id: 2, message: 'See you too', sender: 'Floki' },
 ]
 
-export default function ChatWindow() {
+export default function ChatWindow({ closeChatWindow }: any) {
   const classes = useStyles();
 
   const [state, setState] = useState({ message: "", name: "" });
@@ -100,7 +109,7 @@ export default function ChatWindow() {
     setState({ ...state, [e.target.name]: e.target.value });
   };
 
-  const onMessageSubmit = (e: any) => {
+  const submitMessage = (e: any) => {
     e.preventDefault();
     // const { name, message } = state;
     // socket.emit("Input Chat Message", {
@@ -132,6 +141,12 @@ export default function ChatWindow() {
   return (
     <div className={classes.root}>
       <div className={classes.chatWindow}>
+        <IconButton
+          onClick={closeChatWindow}
+          className={classes.closeButton}
+        >
+          <CloseIcon />
+        </IconButton>
         {renderChat()}
       </div>
       <Grid container>
@@ -153,7 +168,7 @@ export default function ChatWindow() {
         </Grid>
         <Grid item sm={2}>
           <Button
-            onClick={onMessageSubmit}
+            onClick={submitMessage}
             fullWidth
             loading={false}
             disabled={false}

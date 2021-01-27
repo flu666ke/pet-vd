@@ -29,11 +29,16 @@ const ChatPage = observer(function ChatPage() {
     console.log(' open chat')
     setIsChatOpen(true)
   }
+
+  const closeChatWindow = () => {
+    setIsChatOpen(false)
+  }
+
   return (
     <MainLayout title='Chat'>
       <Grid container>
         <Grid item sm={10}>
-          {isChatOpen && <ChatWindow />}
+          {isChatOpen && <ChatWindow closeChatWindow={closeChatWindow} />}
         </Grid>
         <Grid item sm={2}>
           <Profiles openChatWindow={openChatWindow} />

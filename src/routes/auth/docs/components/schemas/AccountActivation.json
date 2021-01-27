@@ -1,7 +1,8 @@
 {
   "properties": {
     "activationId": {
-      "type": "string"
+      "type": "string",
+      "example": "e91dfba2-e198-4b37-bad7-bef4cbb5131b"
     }
   },
   "required": ["activationId"]

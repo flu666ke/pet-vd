@@ -16,15 +16,8 @@
         }
       },
       "responses": {
-        "200": {
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignUp"
-              }
-            }
-          }
+        "204": {
+          "description": "Follow the instruction to activate your account."
         }
       }
     }
@@ -46,15 +39,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountActivation"
-                }
-              }
-            }
+          "204": {
+            "description": "Registration success."
           }
         }
       }
@@ -76,15 +62,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActivationLink"
-                }
-              }
-            }
+          "204": {
+            "description": "Follow the instruction to activate your account."
           }
         }
       }
@@ -106,15 +85,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SignIn"
-                }
-              }
-            }
+          "204": {
+            "description": "Login successful"
           }
         }
       }
@@ -136,15 +108,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ForgotPassword"
-                }
-              }
-            }
+          "204": {
+            "description": "Follow the instruction to activate your account."
           }
         }
       }
@@ -166,15 +131,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RestorePassword"
-                }
-              }
-            }
+          "204": {
+            "description": "Great! Now you can login with your new password."
           }
         }
       }
@@ -186,13 +144,8 @@
         "parameters": [],
         "requestBody": {},
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "message": "Success"
-              }
-            }
+          "204": {
+            "description": "Logout."
           }
         }
       }

@@ -2,11 +2,13 @@
   "properties": {
     "email": {
       "type": "string",
-      "format": "email"
+      "format": "email",
+      "example": "example@gmail.com"
     },
     "password": {
       "type": "string",
-      "minLength": 6
+      "minLength": 6,
+      "example": "!1qwerty"
     }
   },
   "required": ["email", "password"]
