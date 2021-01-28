@@ -14,6 +14,8 @@ import docsModule from './module.docs/docsService'
 import ProfileController from './controllers/profile'
 import profileRoutes from './routes/profile'
 import authRoutes from './routes/auth'
+import ChatController from './controllers/chat'
+import chatRoutes from './routes/chat'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -69,23 +71,27 @@ const startServer = (config: IConfig) => {
     )
 
     const profileController = new ProfileController(services.errorService, authController)
+    const chatController = new ChatController(services.errorService)
 
     return {
       authController,
-      profileController
+      profileController,
+      chatController
     }
   })()
 
   // Routes
   const routes = (() => {
     const auth = authRoutes(core.app, controllers.authController, core.docs)
-    const profile = profileRoutes(core.app, controllers.profileController)
+    const profile = profileRoutes(core.app, controllers.profileController, core.docs)
+    const chat = chatRoutes(core.app, controllers.chatController, core.docs)
 
     core.docs.createSwaggerDocs()
 
     return {
       auth,
-      profile
+      profile,
+      chat
     }
   })()
 }

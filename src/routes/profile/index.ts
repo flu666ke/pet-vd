@@ -6,10 +6,16 @@ import { checkCookies } from '../../middleware/checkCookies'
 import { serializeProfile, serializeProfiles } from './serialization'
 import { IUpdateProfile } from 'src/interfaces/updateProfile'
 import { DataBase } from 'src/db'
+import { DocsModule } from 'src/module.docs/docsService'
+import { validateInputData } from '../../middleware/validateInputData'
 
-export default function profileRoutes(app: Koa, profileController: ProfileController) {
+export default function profileRoutes(app: Koa, profileController: ProfileController, docs: DocsModule) {
   const router = new Router()
   const DB: DataBase = app.context.db
+
+  // Documentation
+  docs.composeWithDirectory(__dirname + '/docs')
+  docs.composeWithDirectory(__dirname + '/schemas', '/components/schemas')
 
   async function getProfile(ctx: Context) {
     try {
@@ -93,10 +99,16 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
   }
 
   router.get('/', checkCookies, getProfile)
-  router.patch('/update-profile', checkCookies, updateProfile)
+  router.patch(
+    '/update-profile',
+    checkCookies,
+    validateInputData('../routes/profile/docs/components/schemas/UpdateProfile.json'),
+    updateProfile
+  )
   router.delete('/delete-account', checkCookies, deleteAccount)
 
   router.get('/profiles', checkCookies, getAllProfiles)
 
   app.use(router.routes())
 }
+// validateInputData('../routes/auth/docs/components/schemas/AccountActivation.json'),

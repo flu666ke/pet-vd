@@ -1,0 +1,25 @@
+{
+  "/chat": {
+    "post": {
+      "description": "Send Message",
+      "tags": ["Chat"],
+      "parameters": [],
+      "requestBody": {
+        "description": "Profile data",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Message"
+            }
+          }
+        }
+      },
+      "responses": {
+        "204": {
+          "description": "OK."
+        }
+      }
+    }
+  }
+}

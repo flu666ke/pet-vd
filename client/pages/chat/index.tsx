@@ -5,14 +5,13 @@ import {
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { GetServerSideProps } from 'next';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import ChatWindow from "../../components/Chat/ChatWindow";
 import Profiles from "../../components/Chat/Profiles";
 import { MainLayout } from "../../components/MainLayout";
 import { withAuthServerSideProps } from '../../hocs/withAuthServerSideProps';
 import { useProfileStore } from '../../providers/RootStoreProvider';
-import API from '../../services/api';
 
 const useStyles = makeStyles((theme: Theme) => ({
   // root: {
@@ -25,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatPage = observer(function ChatPage() {
   const classes = useStyles();
 
-  const { profiles } = useProfileStore();
+  const { profiles, profile } = useProfileStore();
 
   const [isChatOpen, setIsChatOpen] = useState(false)
 
@@ -60,7 +59,7 @@ const ChatPage = observer(function ChatPage() {
     <MainLayout title='Chat'>
       <Grid container>
         <Grid item sm={10}>
-          {isChatOpen && <ChatWindow closeChatWindow={closeChatWindow} />}
+          {isChatOpen && <ChatWindow closeChatWindow={closeChatWindow} profile={profile!} />}
         </Grid>
         <Grid item sm={2}>
           <Profiles openChatWindow={openChatWindow} profiles={profiles ? profiles : []} />

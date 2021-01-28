@@ -1,0 +1,22 @@
+{
+  "properties": {
+    "chatId": {
+      "type": "number",
+      "example": "2323"
+    },
+    "senderId": {
+      "type": "number",
+      "example": "2323"
+    },
+    "text": {
+      "type": "string",
+      "example": "Some message."
+    },
+    "sentAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2019-12-18T21:29:00.791Z"
+    }
+  },
+  "required": ["chatId", "senderId", "text", "sentAt"]
+}

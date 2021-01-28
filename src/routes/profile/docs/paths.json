@@ -1,0 +1,88 @@
+{
+  "/": {
+    "get": {
+      "description": "Get Profile",
+      "tags": ["Profile"],
+      "parameters": [],
+      "requestBody": {},
+      "responses": {
+        "200": {
+          "description": "Profile data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Profile"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/update-profile": {
+    "patch": {
+      "description": "Update Profile data",
+      "tags": ["Profile"],
+      "parameters": [],
+      "requestBody": {
+        "description": "Profile data",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateProfile"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Updated Profile data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Profile"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/delete-account": {
+    "delete": {
+      "description": "Delete Account",
+      "tags": ["Profile"],
+      "parameters": [],
+      "requestBody": {},
+      "responses": {
+        "204": {
+          "description": "Account deleted successfully."
+        }
+      }
+    }
+  },
+  "/profiles": {
+    "get": {
+      "description": "Get Profile",
+      "tags": ["Profile"],
+      "parameters": [],
+      "requestBody": {},
+      "responses": {
+        "200": {
+          "description": "Profile data",
+          "content": {
+            "application/json": {
+              "schema": {          
+                "type": "array",
+                "items": {
+                "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

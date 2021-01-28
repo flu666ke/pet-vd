@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "userId": {
+      "type": "number",
+      "example": "2323"
+    },
+    "firstName": {
+      "type": "string",
+      "example": "Denys"
+    },
+    "lastName": {
+      "type": "string",
+      "example": "Korniienko"
+    },
+    "gender": {
+      "type": "string",
+      "example": "male"
+    }
+  }
+}

@@ -22,6 +22,7 @@ import Button from '../components/common/Button';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import API from '../services/api';
 import { withAuthServerSideProps } from '../hocs/withAuthServerSideProps';
+import { UpdateProfile } from '../interfaces';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -56,14 +57,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: 180
   },
 }));
-
-interface UpdateProfile {
-  firstName: string
-  lastName: string
-  gender?: string
-  newPassword?: string
-  oldPassword?: string
-}
 
 const Profile = observer(function Profile() {
   const classes = useStyles();

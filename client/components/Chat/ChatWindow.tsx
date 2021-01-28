@@ -1,6 +1,8 @@
 import { Grid, IconButton, makeStyles, TextField, Theme } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import { observer } from 'mobx-react-lite';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import API from '../../services/api';
 import Button from '../common/Button';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -80,10 +82,22 @@ const chats = [
   { id: 2, message: 'See you too', sender: 'Floki' },
 ]
 
-export default function ChatWindow({ closeChatWindow }: any) {
+interface Profile {
+  userId: number
+  firstName: string
+  lastName: string
+  gender?: string
+}
+
+interface ChatWindowProps {
+  closeChatWindow: () => void
+  profile: Profile
+}
+
+const ChatWindow = observer(function ChatWindow({ closeChatWindow, profile }: ChatWindowProps) {
   const classes = useStyles();
 
-  const [state, setState] = useState({ message: "", name: "" });
+  const [state, setState] = useState({ message: '', name: profile.firstName });
 
   useEffect(() => {
     // getChats()
@@ -109,8 +123,11 @@ export default function ChatWindow({ closeChatWindow }: any) {
     setState({ ...state, [e.target.name]: e.target.value });
   };
 
-  const submitMessage = (e: any) => {
+  const submitMessage = async (e: any) => {
     e.preventDefault();
+
+    await API.sendMessage(state)
+
     // const { name, message } = state;
     // socket.emit("Input Chat Message", {
     //   name,
@@ -120,7 +137,7 @@ export default function ChatWindow({ closeChatWindow }: any) {
     //   nowTime,
     //   type,
     // });
-    // setState({ message: "", name });
+    setState({ message: '', name: profile.firstName });
   };
 
   const renderChat = () => {
@@ -176,9 +193,11 @@ export default function ChatWindow({ closeChatWindow }: any) {
             type='submit'
           >
             Send
-                </Button>
+          </Button>
         </Grid>
       </Grid>
     </div>
   )
-}
+})
+
+export default ChatWindow

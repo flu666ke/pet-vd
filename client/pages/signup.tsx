@@ -38,7 +38,6 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (values: RegisterData) => {
-
     try {
       setLoading(true)
       const response = await API.signUp(values)
@@ -53,7 +52,6 @@ export default function SignUp() {
   return (
     <MainLayout title='Registration'>
       <div className={classes.root}>
-        {/* <Typography component='h2' variant='h2' className={classes.title}> */}
         <Typography className={classes.title}>
           Registration
         </Typography>
@@ -64,11 +62,11 @@ export default function SignUp() {
             validationSchema={SignupSchema}
             // initialErrors={errors}
             initialValues={{
-              firstName: "",
-              lastName: "",
-              email: "",
-              password: "",
-              confirmPassword: "",
+              firstName: '',
+              lastName: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
             }}
           >
             {({ isValid }) => (

@@ -79,6 +79,11 @@ const API = {
     const { data } = await instance.delete('logout')
 
     return data
+  },
+  async sendMessage(body: any) {
+    const { data } = await instance.post('chat', body)
+
+    return data
   }
 }
 

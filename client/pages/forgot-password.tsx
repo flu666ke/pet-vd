@@ -36,7 +36,6 @@ export default function ForgotPassword() {
   const [isLoading, setLoading] = useState(false)
 
   const handleSubmit = async ({ email }: { email: string }) => {
-
     try {
       setLoading(true)
       const response = await API.forgotPassword(email)

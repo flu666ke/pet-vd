@@ -74,6 +74,18 @@ class DB {
         'CREATE TABLE IF NOT EXISTS `restorePasswords`(`userId` INT(10), `restorePasswordId` VARCHAR(60), `expiresAt` DATETIME, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
       )
 
+      DB.runQuery(
+        'CREATE TABLE IF NOT EXISTS `chats`(`id` int AUTO_INCREMENT, `lastMessageSentAt` DATETIME, PRIMARY KEY(id))'
+      )
+
+      DB.runQuery(
+        'CREATE TABLE IF NOT EXISTS `messages`(`id` int AUTO_INCREMENT, `chatId` INT(10), `senderId` INT(10), `text` VARCHAR(255), `sentAt` DATETIME, PRIMARY KEY(id), FOREIGN KEY (chatId) REFERENCES `chats` (id) ON DELETE CASCADE, FOREIGN KEY (senderId) REFERENCES `users` (id) ON DELETE CASCADE)'
+      )
+
+      DB.runQuery(
+        'CREATE TABLE IF NOT EXISTS `chatParticipants`(`id` int AUTO_INCREMENT, `chatId` INT(10), `userId` INT(10), PRIMARY KEY(id), FOREIGN KEY (chatId) REFERENCES `chats` (id) ON DELETE CASCADE, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
+      )
+
       // DB.runQuery(
       //   'CREATE TABLE IF NOT EXISTS `messages`(`id` int AUTO_INCREMENT, `message` VARCHAR(255), `senderId` INT(10), FOREIGN KEY (senderId) REFERENCES `users` (id) ON DELETE CASCADE), `recipientId` INT(10), FOREIGN KEY (recipientId) REFERENCES `users` (id) ON DELETE CASCADE)'
       // )

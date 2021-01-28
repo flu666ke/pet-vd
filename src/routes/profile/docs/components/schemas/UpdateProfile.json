@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "userId": {
+      "type": "number",
+      "example": "2323"
+    },
+    "firstName": {
+      "type": "string",
+      "example": "Denys"
+    },
+    "lastName": {
+      "type": "string",
+      "example": "Korniienko"
+    },
+    "gender": {
+      "type": "string",
+      "example": "male"
+    },
+    "oldPassword": {
+      "type": "string",
+      "example": "!1qwerty"
+    },
+    "newPassword": {
+      "type": "string",
+      "example": "!1qwerty"
+    }
+  },
+  "required": ["firstName", "lastName"]
+}

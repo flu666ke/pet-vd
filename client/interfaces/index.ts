@@ -10,8 +10,10 @@ export interface RegisterData {
   password: string
 }
 
-export interface PasswordTextFieldProps {
-  label: string
-  name: string
-  placeholder: string
+export interface UpdateProfile {
+  firstName: string
+  lastName: string
+  gender?: string
+  newPassword?: string
+  oldPassword?: string
 }
