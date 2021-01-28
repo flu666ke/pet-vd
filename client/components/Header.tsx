@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { makeStyles, Theme } from '@material-ui/core';
 
-import { useUserStore } from '../providers/RootStoreProvider';
+import { useProfileStore } from '../providers/RootStoreProvider';
 import API from '../services/api';
 import { useRouter } from 'next/router';
 
@@ -79,12 +79,12 @@ interface MenuItem {
 export default function AuthHeader() {
   const classes = useStyles();
   const router = useRouter()
-  const { user, removeUser } = useUserStore()
+  const { profile, removeProfile } = useProfileStore()
 
   const logout = async () => {
     try {
       await API.logout()
-      removeUser()
+      removeProfile()
       router.push('/signin')
     } catch (error) {
       console.log({ error })
@@ -116,8 +116,8 @@ export default function AuthHeader() {
       </Link>
 
       <ul className={classes.linksList}>
-        {user ? privateLinksList : publicLinksList}
-        {user && <button className={classes.logoutButton} onClick={logout}>Logout</button>}
+        {profile ? privateLinksList : publicLinksList}
+        {profile && <button className={classes.logoutButton} onClick={logout}>Logout</button>}
       </ul>
     </header>
   );

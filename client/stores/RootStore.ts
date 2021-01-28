@@ -1,30 +1,36 @@
-import { UserHydration, UserStore } from './UserStore'
+import { ProfileHydration, ProfileStore } from './ProfileStore'
 import { ErrorHydration, ErrorStore } from './ErrorStore'
 import { NoticeHydration, NoticeStore } from './NoticeStore'
 
 export type HydrationData = {
   error?: ErrorHydration
   notice?: NoticeHydration
-  user?: UserHydration
+  profile?: ProfileHydration
+  profiles?: ProfileHydration[]
 }
 
 export class RootStore {
   errorStore: ErrorStore
-  userStore: UserStore
+  profileStore: ProfileStore
   noticeStore: NoticeStore
 
   constructor() {
     this.errorStore = new ErrorStore(this)
-    this.userStore = new UserStore(this)
+    this.profileStore = new ProfileStore(this)
     this.noticeStore = new NoticeStore(this)
   }
 
   hydrate(data: HydrationData) {
     if (data.error) {
       this.errorStore.hydrate(data.error)
-    } else if (data.user) {
-      this.userStore.hydrate(data.user)
-    } else if (data.notice) {
+    }
+    if (data.profile) {
+      this.profileStore.hydrate(data.profile)
+    }
+    if (data.profiles) {
+      this.profileStore.hydrate(undefined, data.profiles)
+    }
+    if (data.notice) {
       this.noticeStore.hydrate(data.notice)
     }
   }

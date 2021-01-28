@@ -3,7 +3,7 @@ import Router from 'koa-router'
 
 import ProfileController from 'src/controllers/profile'
 import { checkCookies } from '../../middleware/checkCookies'
-import serializeProfile from './serialization'
+import { serializeProfile, serializeProfiles } from './serialization'
 import { IUpdateProfile } from 'src/interfaces/updateProfile'
 import { DataBase } from 'src/db'
 
@@ -74,9 +74,29 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
     }
   }
 
+  async function getAllProfiles(ctx: Context) {
+    try {
+      const profiles = await profileController.getAllProfiles(DB)
+
+      ctx.body = {
+        profiles: serializeProfiles(profiles)
+      }
+    } catch (error) {
+      ctx.status = error.httpStatus || 500
+      ctx.body = {
+        error: {
+          message: error.message,
+          ...error
+        }
+      }
+    }
+  }
+
   router.get('/', checkCookies, getProfile)
   router.patch('/update-profile', checkCookies, updateProfile)
   router.delete('/delete-account', checkCookies, deleteAccount)
+
+  router.get('/profiles', checkCookies, getAllProfiles)
 
   app.use(router.routes())
 }

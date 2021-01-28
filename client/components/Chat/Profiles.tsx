@@ -26,23 +26,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Profile {
-  id: number
+  userId: number
   firstName: string
   lastName: string
-  gender: string
+  gender?: string
 }
 
-const profiles = [
-  { id: 1, firstName: 'Den', lastName: 'Korn', gender: 'X' },
-  { id: 2, firstName: 'Ann', lastName: 'Rope', gender: 'X' },
-  { id: 3, firstName: 'Bill', lastName: 'Knife', gender: 'X' },
-]
+interface ProfilesProps {
+  openChatWindow: () => void
+  profiles: Profile[]
+}
 
-export default function Profiles({ openChatWindow }: any) {
+export default function Profiles({ openChatWindow, profiles }: ProfilesProps) {
   const classes = useStyles();
 
-  const renderProfiles = (profiles: Profile[]) => profiles.map(({ id, firstName, lastName, gender }: Profile) => (
-    <Card raised className={classes.profileBlock} key={id} onClick={openChatWindow}>
+  const renderProfiles = (profiles: Profile[]) => profiles.map(({ userId, firstName, lastName, gender }: Profile) => (
+    <Card raised className={classes.profileBlock} key={userId} onClick={openChatWindow}>
       <CardContent>
         <Typography className={classes.title}>
           {firstName} {lastName}

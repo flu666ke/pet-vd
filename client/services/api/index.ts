@@ -30,6 +30,11 @@ const API = {
 
     return data
   },
+  async getProfiles() {
+    const { data } = await instance.get('profiles')
+
+    return data
+  },
   async updateProfile(body: any) {
     const { data } = await instance.patch('update-profile', body)
 

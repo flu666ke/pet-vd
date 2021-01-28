@@ -26,9 +26,9 @@ export function useNoticeStore() {
   return noticeStore;
 }
 
-export function useUserStore() {
-  const { userStore } = useRootStore();
-  return userStore;
+export function useProfileStore() {
+  const { profileStore } = useRootStore();
+  return profileStore;
 }
 
 export function RootStoreProvider({

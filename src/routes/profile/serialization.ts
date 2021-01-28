@@ -1,12 +1,17 @@
-import { User } from 'src/models/user'
+import { Profile } from 'src/models/profile'
 import { IUpdateProfile } from '../../interfaces/updateProfile'
 
-export default function serializeProfile(profile: User): IUpdateProfile {
-  const { firstName, lastName, gender } = profile
+export function serializeProfile(profile: Profile): IUpdateProfile {
+  const {userId, firstName, lastName, gender } = profile
 
   return {
+    userId,
     firstName,
     lastName,
     gender: gender ? gender : null
   }
+}
+
+export function serializeProfiles(profiles: Profile[]) {
+  return profiles.map(profile => serializeProfile(profile))
 }

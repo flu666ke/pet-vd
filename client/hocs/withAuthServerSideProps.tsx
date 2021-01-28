@@ -2,7 +2,7 @@ export function withAuthServerSideProps(getServerSidePropsFunc?: Function) {
   return async (ctx: any) => {
     const { props } = await getProfile(ctx);
 
-    if (!props.hydrationData.user) {
+    if (!props.hydrationData.profile) {
       ctx.res.writeHead(302, {
         Location: '/signin',
       });
@@ -10,7 +10,7 @@ export function withAuthServerSideProps(getServerSidePropsFunc?: Function) {
     }
 
     if (getServerSidePropsFunc) {
-      return { props: { data: await getServerSidePropsFunc(ctx) } };
+      Object.assign(props.hydrationData, await getServerSidePropsFunc(ctx))
     }
     return { props };
   }
@@ -37,7 +37,7 @@ async function getProfile(ctx: any) {
     props: {
       hydrationData: {
         error: responseError ? { message: responseError, httpStatus: response.status, code: 'some code' } : responseError,
-        user: profile
+        profile: profile
       },
     },
   };

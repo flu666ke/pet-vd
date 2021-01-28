@@ -15,7 +15,7 @@ import { Formik, Form } from 'formik';
 
 import { MainLayout } from '../components/MainLayout';
 import { ProfileSchema } from '../services/validationSchemas'
-import { useErrorStore, useNoticeStore, useUserStore } from '../providers/RootStoreProvider';
+import { useErrorStore, useNoticeStore, useProfileStore } from '../providers/RootStoreProvider';
 import TextField from '../components/common/TextField';
 import PasswordTextField from '../components/common/PasswordTextField';
 import Button from '../components/common/Button';
@@ -70,7 +70,7 @@ const Profile = observer(function Profile() {
   const router = useRouter()
   const { setError } = useErrorStore();
   const { setNotice } = useNoticeStore();
-  const { user, removeUser } = useUserStore();
+  const { profile, removeProfile } = useProfileStore();
 
   const [isLoading, setLoading] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -101,7 +101,7 @@ const Profile = observer(function Profile() {
       const response = await API.deleteAccount()
       setNotice(response.message)
       closeConfirmDialog()
-      removeUser()
+      removeProfile()
       router.push('/signin')
     } catch (error) {
       setError(error.response.data?.error)
@@ -120,9 +120,9 @@ const Profile = observer(function Profile() {
           enableReinitialize
           onSubmit={handleSubmit}
           initialValues={{
-            firstName: user?.firstName || '',
-            lastName: user?.lastName || '',
-            gender: user?.gender || '',
+            firstName: profile?.firstName || '',
+            lastName: profile?.lastName || '',
+            gender: profile?.gender || '',
             oldPassword: '',
             newPassword: '',
             confirmNewPassword: ''

@@ -59,7 +59,7 @@ class DB {
       )
 
       DB.runQuery(
-        'CREATE TABLE IF NOT EXISTS `profiles`(`userId` INT(10), `firstName` VARCHAR(60), `lastName` VARCHAR(60), `gender` VARCHAR(60), `updated_at` TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(), `created_at` TIMESTAMP NOT NULL DEFAULT NOW(), FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
+        'CREATE TABLE IF NOT EXISTS `profiles`(`userId` INT(10), `firstName` VARCHAR(60), `lastName` VARCHAR(60), `gender` VARCHAR(60), `updatedAt` TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(), `createdAt` TIMESTAMP NOT NULL DEFAULT NOW(), FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
       )
 
       DB.runQuery(
