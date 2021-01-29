@@ -82,7 +82,8 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
 
   async function getAllProfiles(ctx: Context) {
     try {
-      const profiles = await profileController.getAllProfiles(DB)
+      const accessToken = ctx.cookies.get('accessToken')
+      const profiles = await profileController.getAllProfiles(accessToken!, DB)
 
       ctx.body = {
         profiles: serializeProfiles(profiles)
@@ -111,4 +112,3 @@ export default function profileRoutes(app: Koa, profileController: ProfileContro
 
   app.use(router.routes())
 }
-// validateInputData('../routes/auth/docs/components/schemas/AccountActivation.json'),

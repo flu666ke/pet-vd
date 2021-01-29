@@ -33,7 +33,7 @@ interface Profile {
 }
 
 interface ProfilesProps {
-  openChatWindow: () => void
+  openChatWindow: (recipientId: number) => void
   profiles: Profile[]
 }
 
@@ -41,7 +41,7 @@ export default function Profiles({ openChatWindow, profiles }: ProfilesProps) {
   const classes = useStyles();
 
   const renderProfiles = (profiles: Profile[]) => profiles.map(({ userId, firstName, lastName, gender }: Profile) => (
-    <Card raised className={classes.profileBlock} key={userId} onClick={openChatWindow}>
+    <Card raised className={classes.profileBlock} key={userId} onClick={() => openChatWindow(userId)}>
       <CardContent>
         <Typography className={classes.title}>
           {firstName} {lastName}

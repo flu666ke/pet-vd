@@ -73,10 +73,13 @@ export default class ProfileController {
     await DB.runQuery(deleteAccessToken)
   }
 
-  async getAllProfiles(DB: DataBase): Promise<Profile[]> {
-    const selectProfiles = `SELECT * FROM profiles WHERE userId IN (SELECT id FROM users WHERE emailVerifiedAt IS NOT NULL)`
+  async getAllProfiles(accessToken: string, DB: DataBase): Promise<Profile[]> {
+    const selectUser = `SELECT * FROM users WHERE id IN (SELECT userId FROM accessTokens WHERE accessToken = '${accessToken}')`
+    const user: User[] = await DB.runQuery(selectUser)
+
+    const selectProfiles = `SELECT * FROM profiles WHERE userId IN (SELECT id FROM users WHERE emailVerifiedAt IS NOT NULL) AND userId <> ${user[0].id}`
     const profiles: Profile[] = await DB.runQuery(selectProfiles)
 
-    return profiles
+    return profiles ? profiles : []
   }
 }

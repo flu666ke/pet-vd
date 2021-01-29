@@ -1,8 +1,7 @@
-import { Grid, IconButton, makeStyles, TextField, Theme } from '@material-ui/core';
+import { CircularProgress, Grid, IconButton, makeStyles, TextField, Theme } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { observer } from 'mobx-react-lite';
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-import API from '../../services/api';
+import React, { ChangeEvent } from 'react';
 import Button from '../common/Button';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -71,82 +70,42 @@ const useStyles = makeStyles((theme: Theme) => ({
     top: 0,
     left: 0
   },
+  loader: {
+    height: 'calc(80vh - 64px)',
+    background: theme.palette.background.default,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 }));
-
-const chats = [
-  { id: 1, message: 'Hello', sender: 'Mike' },
-  { id: 2, message: 'Hi', sender: 'Floki' },
-  { id: 1, message: 'Bye Bye', sender: 'Mike' },
-  { id: 2, message: 'Bye', sender: 'Floki' },
-  { id: 1, message: 'See you', sender: 'Mike' },
-  { id: 2, message: 'See you too', sender: 'Floki' },
-]
-
-interface Profile {
-  userId: number
-  firstName: string
-  lastName: string
-  gender?: string
-}
 
 interface ChatWindowProps {
   closeChatWindow: () => void
-  profile: Profile
+  onTextChange: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void
+  submitMessage: (e: React.MouseEvent<HTMLButtonElement>) => void
+  text: string
+  isLoading: boolean
+  chat: any
 }
 
-const ChatWindow = observer(function ChatWindow({ closeChatWindow, profile }: ChatWindowProps) {
+const ChatWindow = observer(function ChatWindow(
+  {
+    closeChatWindow,
+    onTextChange,
+    submitMessage,
+    text,
+    isLoading,
+    chat
+  }: ChatWindowProps) {
   const classes = useStyles();
-
-  const [state, setState] = useState({ message: '', name: profile.firstName });
-
-  useEffect(() => {
-    // getChats()
-    // socket.on("Output Chat Message", (messageFromBackEnd) => {
-    //   console.log({ messageFromBackEnd })
-    //   afterPostMessage(messageFromBackEnd)
-    // setChat([...chat, ...messageFromBackEnd]);
-    // setChat([...chat]);
-    // });
-  }, []);
-
-  // const messagesEndRef = useRef(null);
-
-  // const scrollToBottom = () => {
-  //   if (!messagesEndRef.current) return;
-
-  //   messagesEndRef.current!.scrollIntoView({ behavior: "smooth" });
-  // };
-
-  // useEffect(scrollToBottom, [chats]);
-
-  const onTextChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setState({ ...state, [e.target.name]: e.target.value });
-  };
-
-  const submitMessage = async (e: any) => {
-    e.preventDefault();
-
-    await API.sendMessage(state)
-
-    // const { name, message } = state;
-    // socket.emit("Input Chat Message", {
-    //   name,
-    //   message,
-    //   userId,
-    //   userImage,
-    //   nowTime,
-    //   type,
-    // });
-    setState({ message: '', name: profile.firstName });
-  };
 
   const renderChat = () => {
     return (
       <ul className={classes.text}>
-        {chats.map(({ message, sender }, index) => (
+        {chat.map(({ text, senderId }: { text: any, senderId: any }, index: any) => (
           <li className={classes.messageBlock} key={index}>
             <p className={classes.message}>
-              {sender}: <span>{message}</span>
+              {senderId}: <span>{text}</span>
             </p>
           </li>
         ))}
@@ -154,6 +113,12 @@ const ChatWindow = observer(function ChatWindow({ closeChatWindow, profile }: Ch
       </ul>
     );
   };
+
+  if (isLoading) {
+    return <div className={classes.loader}>
+      <CircularProgress color='primary' />
+    </div>
+  }
 
   return (
     <div className={classes.root}>
@@ -170,9 +135,9 @@ const ChatWindow = observer(function ChatWindow({ closeChatWindow, profile }: Ch
         <Grid item sm={10}>
           <TextField
             className={classes.input}
-            name='message'
+            name='text'
             onChange={(e) => onTextChange(e)}
-            value={state.message}
+            value={text}
             placeholder="Enter message"
             label='Message'
             variant='outlined'

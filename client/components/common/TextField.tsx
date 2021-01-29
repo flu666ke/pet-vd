@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   input: {
     color: theme.palette.primary.light,
+    // '&:-internal-autofill-selected': {
+    //   backgroundColor: 'green'
+    // }
   },
 }))
 

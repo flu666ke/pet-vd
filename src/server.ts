@@ -71,7 +71,7 @@ const startServer = (config: IConfig) => {
     )
 
     const profileController = new ProfileController(services.errorService, authController)
-    const chatController = new ChatController(services.errorService)
+    const chatController = new ChatController(services.helperService, services.errorService)
 
     return {
       authController,

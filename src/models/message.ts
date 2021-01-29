@@ -1,6 +1,7 @@
 export interface Message {
   id: number
-  message: string
+  chatId?: number
   senderId: number
-  recipientId: number
+  text: string
+  sentAt: Date
 }

@@ -80,8 +80,13 @@ const API = {
 
     return data
   },
-  async sendMessage(body: any) {
+  async createChat(body: any) {
     const { data } = await instance.post('chat', body)
+
+    return data
+  },
+  async sendMessage(body: any) {
+    const { data } = await instance.post('message', body)
 
     return data
   }
