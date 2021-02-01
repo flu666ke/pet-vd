@@ -1,7 +1,8 @@
 import { CircularProgress, Grid, IconButton, makeStyles, TextField, Theme } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { observer } from 'mobx-react-lite';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect, useRef } from 'react';
+import { ChatMessage } from '../../pages/chat';
 import Button from '../common/Button';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -13,17 +14,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   chatWindow: {
     position: 'relative',
     height: 400,
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.secondary.main,
     border: `2px solid ${theme.palette.primary.main}`,
     borderRadius: 6,
-    margin: '40px auto'
+    margin: '40px auto',
+    boxShadow: "inset 0 0 12px 0 rgba(0, 0, 0, 0.5)",
   },
   notchedOutline: {
     borderWidth: 2
   },
   text: {
     ...theme.typography.subtitle1,
-    color: theme.palette.secondary.light,
+    color: theme.palette.primary.light,
     marginTop: 0,
     marginBottom: 30,
     paddingLeft: 0,
@@ -32,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxHeight: 396,
     "&::-webkit-scrollbar": {
       width: 7,
+      cursor: 'pointer'
     },
     "&::-webkit-scrollbar-track": {
       boxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
@@ -39,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       borderRadius: 6,
     },
     "&::-webkit-scrollbar-thumb": {
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
       borderRadius: 6,
     },
   },
@@ -48,27 +51,44 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: 20,
     marginRight: 7,
   },
-  message: {
+  messageRightSide: {
     margin: "auto",
     marginRight: 10,
     marginTop: 10,
     listStyleType: "none",
     wordBreak: "break-word",
-    textIndent: 35,
+    // textIndent: 35,
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: 8,
+    padding: 10,
+  },
+  messageLeftSide: {
+    margin: "auto",
+    marginLeft: 10,
+    marginTop: 10,
+    listStyleType: "none",
+    wordBreak: "break-word",
+    // textIndent: 35,
     backgroundColor: theme.palette.secondary.main,
     borderRadius: 8,
     padding: 10,
   },
   input: {
     width: '96%',
-    color: theme.palette.primary.light,
+    '& .MuiInputBase-input': {
+      color: theme.palette.primary.light
+    }
   },
   closeButton: {
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.secondary.light,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.light,
     position: 'absolute',
-    top: 0,
-    left: 0
+    top: -15,
+    left: -15,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.light,
+      color: theme.palette.primary.main,
+    },
   },
   loader: {
     height: 'calc(80vh - 64px)',
@@ -83,9 +103,10 @@ interface ChatWindowProps {
   closeChatWindow: () => void
   onTextChange: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void
   submitMessage: (e: React.MouseEvent<HTMLButtonElement>) => void
+  profileId: number | undefined
   text: string
   isLoading: boolean
-  chat: any
+  chat: ChatMessage[]
 }
 
 const ChatWindow = observer(function ChatWindow(
@@ -93,23 +114,38 @@ const ChatWindow = observer(function ChatWindow(
     closeChatWindow,
     onTextChange,
     submitMessage,
+    profileId,
     text,
     isLoading,
     chat
   }: ChatWindowProps) {
   const classes = useStyles();
 
+  const messagesEndRef = useRef<null | HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    if (!messagesEndRef.current) return
+
+    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(scrollToBottom, [chat, isLoading])
+
   const renderChat = () => {
     return (
       <ul className={classes.text}>
-        {chat.map(({ text, senderId }: { text: any, senderId: any }, index: any) => (
+        {chat.map(({ text, sender, userId }: ChatMessage, index: number) => (
           <li className={classes.messageBlock} key={index}>
-            <p className={classes.message}>
-              {senderId}: <span>{text}</span>
-            </p>
+            {userId == profileId ?
+              <p className={classes.messageRightSide}>
+                <span>{text}</span> :{sender}
+              </p> :
+              <p className={classes.messageLeftSide}>
+                {sender}: <span>{text}</span>
+              </p>}
           </li>
         ))}
-        {/* <div ref={messagesEndRef} /> */}
+        <div ref={messagesEndRef} />
       </ul>
     );
   };
@@ -124,6 +160,7 @@ const ChatWindow = observer(function ChatWindow(
     <div className={classes.root}>
       <div className={classes.chatWindow}>
         <IconButton
+          size='small'
           onClick={closeChatWindow}
           className={classes.closeButton}
         >
@@ -153,7 +190,7 @@ const ChatWindow = observer(function ChatWindow(
             onClick={submitMessage}
             fullWidth
             loading={false}
-            disabled={false}
+            disabled={!text}
             color='primary'
             type='submit'
           >

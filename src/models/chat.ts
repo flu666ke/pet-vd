@@ -1,3 +1,4 @@
 export interface Chat {
-  userIds: Array<number>
+  id: number
+  oneToOneKey: string
 }

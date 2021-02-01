@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   //   width: '100%',
   //   margin: 0
   // },
+  chat: {
+    marginTop: 10
+  },
   loader: {
     height: 'calc(100vh - 64px)',
     background: theme.palette.background.default,
@@ -36,22 +39,27 @@ interface MessageState {
   sentAt?: Date
 }
 
+export interface ChatMessage {
+  id: number
+  userId?: number
+  sender: string
+  text: string
+  sentAt?: Date
+}
+
 const ChatPage = observer(function ChatPage() {
   const classes = useStyles();
-
   const { profiles, profile } = useProfileStore();
 
-  const chatId = null
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState<boolean>(false)
   const [message, setMessage] = useState<MessageState>({
-    chatId: chatId ? chatId : null,
+    chatId: null,
     senderId: profile ? profile!.userId : null,
     text: ''
   });
-
-  const [chat, setChat] = useState([])
-
-  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [chat, setChat] = useState<ChatMessage[]>([])
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(false)
+  const [recipientId, setRecipientId] = useState<number | null>(null)
 
   const onTextChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setMessage({ ...message, [e.target.name]: e.target.value });
@@ -60,13 +68,14 @@ const ChatPage = observer(function ChatPage() {
   const submitMessage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     message.sentAt = new Date()
     await API.sendMessage(message)
+    const { chat } = await API.createChat({ userIds: [profile!.userId, recipientId] })
 
-    setMessage({ ...message, text: '' });
+    setMessage({ ...message, chatId: chat.chatId, text: '' })
+    setChat(chat.messages)
   };
 
   const openChatWindow = async (recipientId: number) => {
-
-    setMessage({ ...message });
+    setRecipientId(recipientId)
 
     if (!isChatOpen) {
       try {
@@ -94,11 +103,12 @@ const ChatPage = observer(function ChatPage() {
   return (
     <MainLayout title='Chat'>
       <Grid container>
-        <Grid item sm={10}>
+        <Grid item sm={10} className={classes.chat}>
           {isChatOpen && <ChatWindow
             closeChatWindow={closeChatWindow}
             onTextChange={onTextChange}
             submitMessage={submitMessage}
+            profileId={profile?.userId}
             text={message.text}
             isLoading={isLoading}
             chat={chat}
