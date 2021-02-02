@@ -102,6 +102,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  messageSubmitting: {
+    color: 'white'
   }
 }));
 
@@ -120,6 +123,7 @@ interface ChatMessage {
   sender: string
   text: string
   sentAt?: Date
+  isMessageSubmitting?: boolean
 }
 
 const ChatWindow = observer(function ChatWindow() {
@@ -175,13 +179,15 @@ const ChatWindow = observer(function ChatWindow() {
   };
 
   const submitMessage = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
     message.uuid = uuidv4()
 
     try {
       setIsMessageSubmitting(true)
+      setChatToStore({ ...chat, messages: [...chat!.messages, Object.assign(message, { isMessageSubmitting: true })] })
+
       const response = await API.sendMessage(message)
-      console.log({ response })
-      setChatToStore({ ...chat, messages: [...chat!.messages, message] })
+      setChatToStore({ ...chat, messages: Object.assign([], chat?.messages, { [chat?.messages.length!]: response.message }) })
     } catch (error) {
       console.log({ error })
     } finally {
@@ -198,11 +204,11 @@ const ChatWindow = observer(function ChatWindow() {
   const renderChat = () => {
     return (
       <ul className={classes.text}>
-        {chat?.messages.map(({ text, sender, senderId }: ChatMessage, index: number) => (
+        {chat?.messages.map(({ text, sender, senderId, isMessageSubmitting }: ChatMessage, index: number) => (
           <li className={classes.messageBlock} key={index}>
             {senderId == profile?.userId ?
               <p className={classes.messageRightSide}>
-                <span>{text}</span> :{sender}
+                {isMessageSubmitting ? <span className={classes.messageSubmitting}>{text}</span> : <span>{text}</span>} :{sender}
               </p> :
               <p className={classes.messageLeftSide}>
                 {sender}: <span>{text}</span>
@@ -214,56 +220,53 @@ const ChatWindow = observer(function ChatWindow() {
     );
   };
 
-  if (isLoading) {
-    return <div className={classes.loader}>
-      <CircularProgress color='primary' />
-    </div>
-  }
-
   return (
     <MainLayout title='Chat'>
-      <div className={classes.root}>
-        <div className={classes.chatWindow}>
-          <IconButton
-            size='small'
-            onClick={closeChatWindow}
-            className={classes.closeButton}
-          >
-            <CloseIcon />
-          </IconButton>
-          {renderChat()}
-        </div>
-        <Grid container>
-          <Grid item sm={10}>
-            <TextField
-              className={classes.input}
-              name='text'
-              onChange={(e) => onTextChange(e)}
-              value={message.text}
-              placeholder="Enter message"
-              label='Message'
-              variant='outlined'
-              InputProps={{
-                classes: {
-                  notchedOutline: classes.notchedOutline,
-                }
-              }}
-            />
-          </Grid>
-          <Grid item sm={2}>
-            <Button
-              onClick={submitMessage}
-              fullWidth
-              loading={false}
-              disabled={!message.text}
-              color='primary'
-              type='submit'
+      {isLoading ? <div className={classes.loader}>
+        <CircularProgress color='primary' />
+      </div> :
+        <div className={classes.root}>
+          <div className={classes.chatWindow}>
+            <IconButton
+              size='small'
+              onClick={closeChatWindow}
+              className={classes.closeButton}
             >
-              Send
+              <CloseIcon />
+            </IconButton>
+            {renderChat()}
+          </div>
+          <Grid container>
+            <Grid item sm={10}>
+              <TextField
+                className={classes.input}
+                name='text'
+                onChange={(e) => onTextChange(e)}
+                value={message.text}
+                placeholder="Enter message"
+                label='Message'
+                variant='outlined'
+                InputProps={{
+                  classes: {
+                    notchedOutline: classes.notchedOutline,
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item sm={2}>
+              <Button
+                onClick={submitMessage}
+                fullWidth
+                loading={false}
+                disabled={!message.text || isMessageSubmitting}
+                color='primary'
+                type='submit'
+              >
+                Send
           </Button>
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
+        </div>}
     </MainLayout>
   )
 })

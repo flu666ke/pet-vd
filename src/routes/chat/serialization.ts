@@ -23,6 +23,5 @@ export function serializeMessage(message: Message) {
 }
 
 export function serializeMessages(messages: Message[]) {
-  console.log('serializeMessages -- messages --- ', messages)
   return messages.map((message: Message) => serializeMessage(message))
 }
