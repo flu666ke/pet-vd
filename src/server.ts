@@ -16,6 +16,7 @@ import profileRoutes from './routes/profile'
 import authRoutes from './routes/auth'
 import ChatController from './controllers/chat'
 import chatRoutes from './routes/chat'
+import socketService from './module.socket/socketService'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -28,17 +29,22 @@ const startServer = (config: IConfig) => {
 
     const docs = docsModule(app)
 
+    const socketio = socketService(app)
+
+    socketio.sendMessage()
+
     app.use(bodyParser())
     app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
     app.use(logger())
 
     app.use(router.routes())
 
-    app
+    socketio
+      .getServer()
       .listen(config.port, async () => {
         console.log(`Server listening on port: ${config.port}`)
       })
-      .on('error', err => {
+      .on('error', (err: any) => {
         console.error(err)
       })
 

@@ -10,6 +10,7 @@ import { withAuthServerSideProps } from '../../hocs/withAuthServerSideProps';
 import { useChatStore, useProfileStore } from '../../providers/RootStoreProvider';
 import API from '../../services/api';
 import { MainLayout } from '../../components/MainLayout';
+import socketIOClient from "socket.io-client";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -126,10 +127,21 @@ interface ChatMessage {
   isMessageSubmitting?: boolean
 }
 
+const socket = socketIOClient.io("http://localhost:5000", {
+  withCredentials: true,
+  extraHeaders: {
+    'Content-Type': 'application/json'
+  }
+});
+
 const ChatWindow = observer(function ChatWindow() {
   const classes = useStyles();
 
   const router = useRouter()
+
+  const [response, setResponse] = useState("");
+
+  console.log({ response })
 
   const { profile } = useProfileStore();
   const { setChatToStore, chat } = useChatStore();
@@ -159,6 +171,14 @@ const ChatWindow = observer(function ChatWindow() {
         }
       }
       getChat()
+
+      socket.on("FromAPI", (data: React.SetStateAction<string>) => {
+        setResponse(data);
+      });
+
+      // socket.on('getChat', (chat: ChatHydration) => {
+      //   setChatToStore(chat)
+      // });
     }
   }, [router.query.id]);
 
@@ -182,12 +202,17 @@ const ChatWindow = observer(function ChatWindow() {
     e.preventDefault()
     message.uuid = uuidv4()
 
+    if (message) {
+      socket.emit('sendMessage', message, () => setMessage({ ...message, text: '' }));
+    }
+
     try {
       setIsMessageSubmitting(true)
       setChatToStore({ ...chat, messages: [...chat!.messages, Object.assign(message, { isMessageSubmitting: true })] })
 
       const response = await API.sendMessage(message)
-      setChatToStore({ ...chat, messages: Object.assign([], chat?.messages, { [chat?.messages.length!]: response.message }) })
+      // setChatToStore({ ...chat, messages: Object.assign([], chat?.messages, { [chat?.messages.length!]: response.message }) })
+      setChatToStore({ ...chat, messages: chat?.messages.fill(response.message, chat.messages.length - 1)! })
     } catch (error) {
       console.log({ error })
     } finally {
