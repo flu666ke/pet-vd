@@ -1,6 +1,7 @@
 import { ProfileHydration, ProfileStore } from './ProfileStore'
 import { ErrorHydration, ErrorStore } from './ErrorStore'
 import { NoticeHydration, NoticeStore } from './NoticeStore'
+import { ChatStore } from './ChatStore'
 
 export type HydrationData = {
   error?: ErrorHydration
@@ -13,11 +14,13 @@ export class RootStore {
   errorStore: ErrorStore
   profileStore: ProfileStore
   noticeStore: NoticeStore
+  chatStore: ChatStore
 
   constructor() {
     this.errorStore = new ErrorStore(this)
     this.profileStore = new ProfileStore(this)
     this.noticeStore = new NoticeStore(this)
+    this.chatStore = new ChatStore(this)
   }
 
   hydrate(data: HydrationData) {

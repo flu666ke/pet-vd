@@ -31,6 +31,11 @@ export function useProfileStore() {
   return profileStore;
 }
 
+export function useChatStore() {
+  const { chatStore } = useRootStore();
+  return chatStore;
+}
+
 export function RootStoreProvider({
   children,
   hydrationData,

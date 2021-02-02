@@ -14,7 +14,7 @@ export default class ChatController {
   }
 
   async createChat(chat: ICreateChat, DB: DataBase) {
-    const oneToOneKey = chat.userIds.sort().join('-')
+    const { oneToOneKey } = chat
 
     const selectChat = `SELECT * FROM chats WHERE oneToOneKey = '${oneToOneKey}'`
     const selectedChat = await DB.runQuery(selectChat)
@@ -26,7 +26,7 @@ export default class ChatController {
       WHERE chatId = '${selectedChat[0].id}' ORDER BY sentAt ASC`
       const messages: Message[] = await DB.runQuery(selectMessages)
 
-      return { chatId: selectedChat[0].id, messages }
+      return { chatId: selectedChat[0].id, messages: messages ? messages : [] }
     }
 
     const insertChat = `INSERT INTO chats (oneToOneKey) VALUES ('${oneToOneKey}')`
@@ -36,16 +36,22 @@ export default class ChatController {
   }
 
   async sendMessage(message: Message, DB: DataBase) {
-    const { chatId, senderId, text, sentAt } = message
+    const { chatId, senderId, text, uuid } = message
 
-    const insertMessage = `INSERT INTO messages(chatId, senderId, text, sentAt) VALUES (${chatId}, '${senderId}', '${text}', '${this.helperService.getFormattedDate(
-      sentAt
+    const insertMessage = `INSERT INTO messages(uuid, chatId, senderId, text, sentAt) VALUES ('${uuid}', ${chatId}, '${senderId}', '${text}', '${this.helperService.getFormattedDate(
+      new Date()
     )}')`
     await DB.runQuery(insertMessage)
 
     const insertChatParticipants = `INSERT INTO chatParticipants(chatId, userId) VALUES (${chatId}, '${senderId}')`
     await DB.runQuery(insertChatParticipants)
 
-    return 'OK'
+    const selectMessage = `SELECT m.id, m.chatId, m.senderId, m.text, m.sentAt, p.firstName
+    FROM messages AS m
+    INNER JOIN profiles AS p ON m.senderId = p.userId
+    WHERE uuid = '${uuid}'`
+    const selectedMessage = await DB.runQuery(selectMessage)
+
+    return selectedMessage[0]
   }
 }

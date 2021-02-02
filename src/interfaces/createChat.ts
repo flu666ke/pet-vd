@@ -1,7 +1,7 @@
 import { Message } from 'src/models/message'
 
 export interface ICreateChat {
-  userIds: Array<number>
+  oneToOneKey: string
 }
 
 export interface ICreatedChat {

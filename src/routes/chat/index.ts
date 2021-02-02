@@ -4,7 +4,7 @@ import ChatController from 'src/controllers/chat'
 
 import { DataBase } from 'src/db'
 import { DocsModule } from 'src/module.docs/docsService'
-import { serializeChat } from './serialization'
+import { serializeChat, serializeMessage } from './serialization'
 
 export default function chatRoutes(app: Koa, chatController: ChatController, docs: DocsModule) {
   const router = new Router()
@@ -37,7 +37,7 @@ export default function chatRoutes(app: Koa, chatController: ChatController, doc
       const message = await chatController.sendMessage(ctx.request.body, DB)
 
       ctx.body = {
-        message
+        message: serializeMessage(message)
       }
     } catch (error) {
       ctx.status = error.httpStatus || 500

@@ -5,21 +5,14 @@ import {
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { GetServerSideProps } from 'next';
-import React, { ChangeEvent, useState } from 'react';
+import { useRouter } from 'next/router'
 
-import ChatWindow from "../../components/Chat/ChatWindow";
 import Profiles from "../../components/Chat/Profiles";
 import { MainLayout } from "../../components/MainLayout";
 import { withAuthServerSideProps } from '../../hocs/withAuthServerSideProps';
 import { useProfileStore } from '../../providers/RootStoreProvider';
-import API from '../../services/api';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  // root: {
-  //   maxWidth: 600,
-  //   width: '100%',
-  //   margin: 0
-  // },
   chat: {
     marginTop: 10
   },
@@ -32,87 +25,25 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface MessageState {
-  chatId?: number | null
-  senderId: number | null
-  text: string
-  sentAt?: Date
-}
-
-export interface ChatMessage {
-  id: number
-  userId?: number
-  sender: string
-  text: string
-  sentAt?: Date
-}
-
 const ChatPage = observer(function ChatPage() {
   const classes = useStyles();
+  const router = useRouter()
+
   const { profiles, profile } = useProfileStore();
 
-  const [isLoading, setLoading] = useState<boolean>(false)
-  const [message, setMessage] = useState<MessageState>({
-    chatId: null,
-    senderId: profile ? profile!.userId : null,
-    text: ''
-  });
-  const [chat, setChat] = useState<ChatMessage[]>([])
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false)
-  const [recipientId, setRecipientId] = useState<number | null>(null)
-
-  const onTextChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setMessage({ ...message, [e.target.name]: e.target.value });
-  };
-
-  const submitMessage = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    message.sentAt = new Date()
-    await API.sendMessage(message)
-    const { chat } = await API.createChat({ userIds: [profile!.userId, recipientId] })
-
-    setMessage({ ...message, chatId: chat.chatId, text: '' })
-    setChat(chat.messages)
-  };
-
   const openChatWindow = async (recipientId: number) => {
-    setRecipientId(recipientId)
 
-    if (!isChatOpen) {
-      try {
-        setLoading(true)
-        setIsChatOpen(true)
-        const { chat } = await API.createChat({ userIds: [profile!.userId, recipientId] })
+    const userIds = [profile!.userId, recipientId]
+    const oneToOneKey = userIds.sort().join('-')
 
-        setMessage({ ...message, chatId: chat.chatId })
-
-        setChat(chat.messages)
-      } catch (error) {
-        console.log({ error })
-      } finally {
-        setLoading(false)
-      }
-    } else {
-      setIsChatOpen(false)
-    }
-  }
-
-  const closeChatWindow = () => {
-    setIsChatOpen(false)
+    router.push(`chat/${oneToOneKey}`)
   }
 
   return (
     <MainLayout title='Chat'>
       <Grid container>
         <Grid item sm={10} className={classes.chat}>
-          {isChatOpen && <ChatWindow
-            closeChatWindow={closeChatWindow}
-            onTextChange={onTextChange}
-            submitMessage={submitMessage}
-            profileId={profile?.userId}
-            text={message.text}
-            isLoading={isLoading}
-            chat={chat}
-          />}
+          <h1>CHAT</h1>
         </Grid>
         <Grid item sm={2}>
           <Profiles openChatWindow={openChatWindow} profiles={profiles ? profiles : []} />

@@ -2,21 +2,19 @@ import { action, makeObservable, observable } from 'mobx'
 import { RootStore } from './RootStore'
 
 export type MessageHydration = {
-  chatId?: number | null
-  senderId?: number | null
-  // name: string
+  id?: number
+  userId?: number
+  sender: string
   text: string
   sentAt?: Date
 }
 
 export type ChatHydration = {
   chatId?: number
-  senderId: number
-  firstName: string
-  text: string
+  messages: MessageHydration[]
 }
 
-export class ProfileStore {
+export class ChatStore {
   root: RootStore
   chat: null | ChatHydration | undefined
 
@@ -25,8 +23,13 @@ export class ProfileStore {
 
     makeObservable(this, {
       hydrate: action,
+      setChatToStore: action,
       chat: observable
     })
+  }
+
+  setChatToStore = (chat: ChatHydration) => {
+    this.chat = chat
   }
 
   hydrate(chat: ChatHydration) {
