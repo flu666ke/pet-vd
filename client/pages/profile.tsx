@@ -22,7 +22,7 @@ import Button from '../components/common/Button';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import API from '../services/api';
 import { withAuthServerSideProps } from '../hocs/withAuthServerSideProps';
-import { UpdateProfile } from '../interfaces';
+import { IUpdateProfile } from '../interfaces';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -76,7 +76,7 @@ const Profile = observer(function Profile() {
     setIsDeleteDialogOpen(false);
   };
 
-  const handleSubmit = async (profileData: UpdateProfile) => {
+  const handleSubmit = async (profileData: IUpdateProfile) => {
     try {
       setLoading(true)
       const response = await API.updateProfile(profileData)

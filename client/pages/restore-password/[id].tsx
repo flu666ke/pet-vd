@@ -40,7 +40,7 @@ export default function RestorePassword() {
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       setLoading(true)
-      const response = await await API.restorePassword({ newPassword: password, resetPasswordLink: router.query.id })
+      const response = await await API.restorePassword({ newPassword: password, resetPasswordLink: router.query.id as string })
       setNotice(response.message)
       router.push('/signin')
     } catch (error) {

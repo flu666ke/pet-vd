@@ -7,7 +7,7 @@ import TextField from '../components/common/TextField'
 import PasswordTextField from '../components/common/PasswordTextField'
 import { MainLayout } from '../components/MainLayout';
 import { SignupSchema } from '../services/validationSchemas';
-import { RegisterData } from "../interfaces";
+import { IRegisterData } from "../interfaces";
 import API from "../services/api";
 import { useErrorStore, useNoticeStore } from '../providers/RootStoreProvider';
 
@@ -37,7 +37,7 @@ export default function SignUp() {
 
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (values: RegisterData) => {
+  const handleSubmit = async (values: IRegisterData) => {
     try {
       setLoading(true)
       const response = await API.signUp(values)

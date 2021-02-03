@@ -10,7 +10,7 @@ import Router from 'koa-router'
 import EmailService from './module.email/emailService'
 import ErrorService from './module.error/errorService'
 import HelperService from './module.helper/helperService'
-import docsModule from './module.docs/docsService'
+import docsService from './module.docs/docsService'
 import ProfileController from './controllers/profile'
 import profileRoutes from './routes/profile'
 import authRoutes from './routes/auth'
@@ -27,30 +27,19 @@ const startServer = (config: IConfig) => {
     DB.instance
     app.context.db = DB
 
-    const docs = docsModule(app)
-
-    const socketio = socketService(app)
-
-    socketio.sendMessage()
-
     app.use(bodyParser())
     app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
     app.use(logger())
 
     app.use(router.routes())
 
-    socketio
-      .getServer()
-      .listen(config.port, async () => {
-        console.log(`Server listening on port: ${config.port}`)
-      })
-      .on('error', (err: any) => {
-        console.error(err)
-      })
+    const docs = docsService(app)
+    const socketio = socketService(app, config)
 
     return {
       app,
-      docs
+      docs,
+      socketio
     }
   })()
 

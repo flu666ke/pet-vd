@@ -3,10 +3,10 @@ import Router from 'koa-router'
 import ChatController from 'src/controllers/chat'
 
 import { DataBase } from 'src/db'
-import { DocsModule } from 'src/module.docs/docsService'
+import { DocsService } from 'src/module.docs/docsService'
 import { serializeChat, serializeMessage } from './serialization'
 
-export default function chatRoutes(app: Koa, chatController: ChatController, docs: DocsModule) {
+export default function chatRoutes(app: Koa, chatController: ChatController, docs: DocsService) {
   const router = new Router()
   const DB: DataBase = app.context.db
 

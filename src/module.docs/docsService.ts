@@ -42,7 +42,7 @@ function composeDocs(document: SwaggerDocument, directory: string) {
   })
 }
 
-export default function docsModule(app: Koa) {
+export default function docsService(app: Koa) {
   const compose: Array<ComposeHook> = []
   const router = new Router()
 
@@ -99,4 +99,4 @@ export default function docsModule(app: Koa) {
   }
 }
 
-export type DocsModule = ReturnType<typeof docsModule>
+export type DocsService = ReturnType<typeof docsService>

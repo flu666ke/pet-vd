@@ -1,7 +1,8 @@
 import Koa from 'koa'
 import http from 'http'
+import { IConfig } from 'src/config'
 
-export default function socketService(app: Koa) {
+export default function socketService(app: Koa, config: IConfig) {
   const server = http.createServer(app.callback())
   const io = require('socket.io')(server, {
     cors: {
@@ -11,47 +12,33 @@ export default function socketService(app: Koa) {
     }
   })
 
-  io.on('connection', (socket: any) => {
-    const response = new Date()
-    socket.emit('FromAPI', response)
+  server
+    .listen(config.port, async () => {
+      console.log(`Server listening on port: ${config.port}`)
+    })
+    .on('error', (err: any) => {
+      console.error(err)
+    })
+
+  io.on('connection', function (socket: any) {
+    socket.on('initRoom', function (data: any) {
+      console.log('initRoom --- ', data.room)
+      socket.join(data.room)
+    })
+
+    socket.on('inputMessage', function (data: any) {
+      console.log('inputMessage --- ', data)
+      io.in(data.room).emit('outputMessage', data)
+    })
+
+    socket.on('exitRoom', function (data: any) {
+      console.log('exitRoom --- ', data.room)
+      socket.leave(data.room)
+    })
   })
 
-  function sendMessage() {
-    io.on('connection', (socket: any) => {
-      return socket.on('sendMessage', (message: any) => {
-        console.log({ message })
-      })
-    })
-  }
-
-  function getServer() {
-    return server
-  }
-
   return {
-    getServer,
-    sendMessage
+    // sendMessage,
+    // handleSocket
   }
 }
-
-// private _afterListenHandlers: Array<Handler> = []
-
-// constructor(app: ExpressRunnerModule) {
-//   runner.afterListen(async () => {
-//     const io = socketio(runner.server!, {
-//       path: '/api/real-time'
-//     })
-
-//     this._processHandlers(this._afterListenHandlers, io)
-//   })
-// }
-
-// afterListen(handler: Handler) {
-//   this._afterListenHandlers.push(handler)
-// }
-
-// private async _processHandlers(handlers: Array<Handler>, io: socketio.Server) {
-//   for (let handler of handlers) {
-//     await handler(io)
-//   }
-// }

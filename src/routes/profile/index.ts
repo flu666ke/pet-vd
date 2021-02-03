@@ -6,10 +6,10 @@ import { checkCookies } from '../../middleware/checkCookies'
 import { serializeProfile, serializeProfiles } from './serialization'
 import { IUpdateProfile } from 'src/interfaces/updateProfile'
 import { DataBase } from 'src/db'
-import { DocsModule } from 'src/module.docs/docsService'
+import { DocsService } from 'src/module.docs/docsService'
 import { validateInputData } from '../../middleware/validateInputData'
 
-export default function profileRoutes(app: Koa, profileController: ProfileController, docs: DocsModule) {
+export default function profileRoutes(app: Koa, profileController: ProfileController, docs: DocsService) {
   const router = new Router()
   const DB: DataBase = app.context.db
 

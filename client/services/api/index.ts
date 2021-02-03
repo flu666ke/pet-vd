@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { LoginData, RegisterData } from '../../interfaces'
+import { IConfirmAuth, ILoginData, IRegisterData, IUpdatePassword, IUpdateProfile } from '../../interfaces'
 
 const instance = axios.create({
   baseURL: 'http://localhost:5000/',
@@ -35,7 +35,7 @@ const API = {
 
     return data
   },
-  async updateProfile(body: any) {
+  async updateProfile(body: IUpdateProfile) {
     const { data } = await instance.patch('update-profile', body)
 
     return data
@@ -45,12 +45,12 @@ const API = {
 
     return data
   },
-  async signUp(body: RegisterData) {
+  async signUp(body: IRegisterData) {
     const { data } = await instance.post('signup', body)
 
     return data
   },
-  async confirmAuth(body: any) {
+  async confirmAuth(body: IConfirmAuth) {
     const { data } = await instance.post('account-activation', body)
 
     return data
@@ -60,7 +60,7 @@ const API = {
 
     return data
   },
-  async signIn(body: LoginData) {
+  async signIn(body: ILoginData) {
     const { data } = await instance.post('signin', body)
 
     return data
@@ -70,7 +70,7 @@ const API = {
 
     return data
   },
-  async restorePassword(body: any) {
+  async restorePassword(body: IUpdatePassword) {
     const { data } = await instance.post('restore-password', body)
 
     return data

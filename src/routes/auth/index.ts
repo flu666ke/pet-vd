@@ -7,9 +7,9 @@ import { validateInputData } from '../../middleware/validateInputData'
 import { checkCookies } from '../../middleware/checkCookies'
 import { DataBase } from 'src/db'
 import { IUpdatePassword } from 'src/interfaces/updatePassword'
-import { DocsModule } from 'src/module.docs/docsService'
+import { DocsService } from 'src/module.docs/docsService'
 
-export default function authRoutes(app: Koa, authController: AuthController, docs: DocsModule) {
+export default function authRoutes(app: Koa, authController: AuthController, docs: DocsService) {
   const router = new Router()
   const DB: DataBase = app.context.db
 

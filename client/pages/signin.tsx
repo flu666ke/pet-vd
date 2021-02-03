@@ -11,7 +11,7 @@ import PasswordTextField from '../components/common/PasswordTextField'
 import { MainLayout } from '../components/MainLayout';
 import ActivationLinkExpired from '../components/ActivationLink';
 import { SignInSchema } from '../services/validationSchemas';
-import { LoginData } from '../interfaces';
+import { ILoginData } from '../interfaces';
 import API from '../services/api';
 import { useErrorStore, useNoticeStore } from '../providers/RootStoreProvider';
 
@@ -69,7 +69,7 @@ export default function SignIn() {
     setFieldValue('email', e.target?.value)
   };
 
-  const handleSubmit = async (loginData: LoginData) => {
+  const handleSubmit = async (loginData: ILoginData) => {
 
     setEmail(loginData.email)
 
