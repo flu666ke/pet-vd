@@ -12,6 +12,7 @@ import { withAuthServerSideProps } from '../../hocs/withAuthServerSideProps';
 import { useChatStore, useProfileStore } from '../../providers/RootStoreProvider';
 import API from '../../services/api';
 import socket from '../../services/socketio';
+import Message from '../../components/Chat/Message';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -31,14 +32,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   notchedOutline: {
     borderWidth: 2
   },
-  text: {
-    ...theme.typography.subtitle1,
-    color: theme.palette.primary.light,
+  scroll: {
+    // ...theme.typography.subtitle1,
+    // color: theme.palette.primary.light,
     marginTop: 0,
-    marginBottom: 30,
+    // marginBottom: 30,
     paddingLeft: 0,
     overflow: "auto",
-    overflowX: "hidden",
+    // overflowX: "hidden",
     maxHeight: 396,
     "&::-webkit-scrollbar": {
       width: 7,
@@ -53,33 +54,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       backgroundColor: theme.palette.primary.main,
       borderRadius: 6,
     },
-  },
-  messageBlock: {
-    display: "flex",
-    marginBottom: 20,
-    marginRight: 7,
-  },
-  messageRightSide: {
-    margin: "auto",
-    marginRight: 10,
-    marginTop: 10,
-    listStyleType: "none",
-    wordBreak: "break-word",
-    // textIndent: 35,
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: 8,
-    padding: 10,
-  },
-  messageLeftSide: {
-    margin: "auto",
-    marginLeft: 10,
-    marginTop: 10,
-    listStyleType: "none",
-    wordBreak: "break-word",
-    // textIndent: 35,
-    backgroundColor: theme.palette.secondary.main,
-    borderRadius: 8,
-    padding: 10,
   },
   input: {
     width: '96%',
@@ -105,9 +79,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  messageSubmitting: {
-    color: 'white'
-  }
 }));
 
 interface MessageState {
@@ -217,16 +188,17 @@ const ChatWindow = observer(function ChatWindow() {
 
   const renderChat = () => {
     return (
-      <ul className={classes.text}>
-        {chat?.messages.map(({ text, sender, senderId, isMessageSubmitting }: ChatMessage, index: number) => (
-          <li className={classes.messageBlock} key={index}>
-            {senderId == profile?.userId ?
-              <p className={classes.messageRightSide}>
-                {isMessageSubmitting ? <span className={classes.messageSubmitting}>{text}</span> : <span>{text}</span>} :{sender}
-              </p> :
-              <p className={classes.messageLeftSide}>
-                {sender}: <span>{text}</span>
-              </p>}
+      <ul className={classes.scroll}>
+        {chat?.messages.map(({ text, sender, senderId, isMessageSubmitting, sentAt }: ChatMessage, index: number) => (
+          <li key={index}>
+            <Message
+              text={text}
+              sender={sender}
+              senderId={senderId}
+              profileId={profile?.userId}
+              isMessageSubmitting={isMessageSubmitting}
+              sentAt={sentAt}
+            />
           </li>
         ))}
         <div ref={messagesEndRef} />

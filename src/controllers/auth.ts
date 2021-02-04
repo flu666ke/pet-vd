@@ -41,7 +41,7 @@ export default class AuthController {
 
     const uuid = uuidv4()
 
-    const expirationDate = this.helperService.getExpirationDate(1)
+    const expirationDate = this.helperService.getExpirationDate()
 
     const insertActivation = `INSERT INTO activations(userId, activationId, expiresAt) VALUES (${createdUser.insertId}, '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertActivation)
@@ -67,7 +67,7 @@ export default class AuthController {
     await DB.runQuery(updateUser)
 
     const uuid = uuidv4()
-    const expirationDate = this.helperService.getExpirationDate(1)
+    const expirationDate = this.helperService.getExpirationDate()
 
     const insertAccessToken = `INSERT INTO accessTokens(userId, accessToken, expiresAt) VALUES ('${activation[0].userId}', '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertAccessToken)
@@ -81,7 +81,7 @@ export default class AuthController {
   async getActivationLink(email: string, DB: DataBase): Promise<void> {
     const uuid = uuidv4()
 
-    const expirationDate = this.helperService.getExpirationDate(1)
+    const expirationDate = this.helperService.getExpirationDate()
 
     const selectUser = `SELECT * FROM users WHERE email = '${email}'`
     const user = await DB.runQuery(selectUser)
@@ -113,7 +113,7 @@ export default class AuthController {
     }
 
     const uuid = uuidv4()
-    const expirationDate = this.helperService.getExpirationDate(1)
+    const expirationDate = this.helperService.getExpirationDate()
 
     const insertAccessToken = `INSERT INTO accessTokens(userId, accessToken, expiresAt) VALUES ('${user[0].id}', '${uuid}', '${expirationDate}')`
     await DB.runQuery(insertAccessToken)
@@ -124,7 +124,7 @@ export default class AuthController {
   async forgotPassword(email: string, DB: DataBase): Promise<void> {
     const uuid = uuidv4()
 
-    const expirationDate = this.helperService.getExpirationDate(1)
+    const expirationDate = this.helperService.getExpirationDate()
 
     const selectUser = `SELECT * FROM users WHERE email = '${email}'`
     const user: User[] = await DB.runQuery(selectUser)
