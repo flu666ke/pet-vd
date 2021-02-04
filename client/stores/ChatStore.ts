@@ -7,6 +7,7 @@ export type MessageHydration = {
   sender: string
   text: string
   sentAt?: Date
+  isMessageSubmitting?: boolean
 }
 
 export type ChatHydration = {

@@ -104,7 +104,7 @@ const ChatWindow = observer(function ChatWindow() {
   const router = useRouter()
 
   const { profile } = useProfileStore();
-  const { setChatToStore, chat } = useChatStore();
+  const { setChatToStore, addMessageToStore, chat } = useChatStore();
 
   const [isLoading, setLoading] = useState<boolean>(false)
   const [isMessageSubmitting, setIsMessageSubmitting] = useState<boolean>(false)
@@ -141,10 +141,9 @@ const ChatWindow = observer(function ChatWindow() {
   useEffect(() => {
     setMessage({ ...message, chatId: chat ? chat.chatId : null });
 
-    socket.on("outputMessage", ({ message }: any) => {
-      console.log('outputMessage --- ', message)
-      // setChatToStore({ ...chat, messages: [...chat!.messages, Object.assign(message, { isMessageSubmitting: true })] })
-    });
+    // socket.on("outputMessage", (message: ChatMessage) => {
+    //   console.log('outputMessage --- ', message)
+    // });
 
   }, [chat])
 
