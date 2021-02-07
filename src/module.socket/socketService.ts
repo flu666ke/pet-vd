@@ -52,9 +52,4 @@ export default function socketService(app: Koa, config: IConfig) {
       socket.leave(room)
     })
   })
-
-  return {
-    // sendMessage,
-    // handleSocket
-  }
 }

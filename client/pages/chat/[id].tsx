@@ -104,7 +104,7 @@ const ChatWindow = observer(function ChatWindow() {
   const router = useRouter()
 
   const { profile } = useProfileStore();
-  const { setChatToStore, addMessageToStore, chat } = useChatStore();
+  const { setChatToStore, chat } = useChatStore();
 
   const [isLoading, setLoading] = useState<boolean>(false)
   const [isMessageSubmitting, setIsMessageSubmitting] = useState<boolean>(false)
