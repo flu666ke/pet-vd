@@ -2,6 +2,7 @@ import schedule, { Job } from 'node-schedule'
 import Koa from 'koa'
 import AuthController from 'src/controllers/auth'
 import { DataBase } from 'src/db'
+import { format } from 'date-fns'
 
 export interface SchedulerServiceConfig {}
 
@@ -11,12 +12,13 @@ export default function schedulerService(app: Koa, authController: AuthControlle
   let expiredActivationLinksObserver: Job | undefined
 
   function startObservingExpiredActivationLinks() {
-    // start every hour
-    let date = new Date()
-    date.setHours(date.getHours() - 1)
+    expiredActivationLinksObserver = schedule.scheduleJob('* */1 * * *', async () => {
+      let date = new Date()
+      date.setHours(date.getHours() - 1)
 
-    expiredActivationLinksObserver = schedule.scheduleJob('* * */1 * * *', async () => {
-      authController.removeExpiredActivationLinks(date, DB)
+      let updateDate = format(date, 'yyyy-MM-dd HH:mm:ss')
+
+      authController.removeExpiredActivationLinks(updateDate, DB)
     })
   }
 
