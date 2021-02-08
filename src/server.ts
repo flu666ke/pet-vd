@@ -17,6 +17,7 @@ import authRoutes from './routes/auth'
 import ChatController from './controllers/chat'
 import chatRoutes from './routes/chat'
 import socketService from './module.socket/socketService'
+import schedulerService from './module.scheduler/schedulerService'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -89,6 +90,10 @@ const startServer = (config: IConfig) => {
       chat
     }
   })()
+
+  // Scheduler
+  const scheduler = schedulerService(core.app, controllers.authController)
+  scheduler.start()
 }
 
 export default startServer

@@ -173,4 +173,9 @@ export default class AuthController {
   comparePassword(password: string, hashedPassword: string): boolean {
     return bcrypt.compareSync(password, hashedPassword)
   }
+
+  async removeExpiredActivationLinks(updateDate: Date, DB: DataBase): Promise<void> {
+    const deleteActivation = `DELETE FROM activations WHERE expiresAt < ${updateDate}`
+    await DB.runQuery(deleteActivation)
+  }
 }
