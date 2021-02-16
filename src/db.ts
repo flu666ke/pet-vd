@@ -78,6 +78,10 @@ class DB {
       DB.runQuery(
         'CREATE TABLE IF NOT EXISTS `chatParticipants`(`id` int AUTO_INCREMENT, `chatId` INT(10), `userId` INT(10), PRIMARY KEY(id), FOREIGN KEY (chatId) REFERENCES `chats` (id) ON DELETE CASCADE, FOREIGN KEY (userId) REFERENCES `users` (id) ON DELETE CASCADE)'
       )
+      DB.runQuery(
+        'CREATE TABLE IF NOT EXISTS `voting`(`id` int AUTO_INCREMENT, `creatorId` INT(10), `title` VARCHAR(255), `expirationDate` DATETIME,' +
+          ' `option1` VARCHAR(255), `numbersOpt1` INT(10), `option2` VARCHAR(255), `numbersOpt2` INT(10), `option3` VARCHAR(255), `numbersOpt3` INT(10), `option4` VARCHAR(255), `numbersOpt4` INT(10), `allVotes` INT(10), `updatedAt` TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(), `createdAt` TIMESTAMP NOT NULL DEFAULT NOW(), PRIMARY KEY(id), FOREIGN KEY (creatorId) REFERENCES `users` (id) ON DELETE CASCADE)'
+      )
     })
   }
 }

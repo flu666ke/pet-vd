@@ -12,6 +12,8 @@ export function withAuthServerSideProps(getServerSidePropsFunc?: Function) {
     if (getServerSidePropsFunc) {
       Object.assign(props.hydrationData, await getServerSidePropsFunc(ctx))
     }
+
+    console.log({ props })
     return { props };
   }
 }

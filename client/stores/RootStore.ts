@@ -2,12 +2,15 @@ import { ProfileHydration, ProfileStore } from './ProfileStore'
 import { ErrorHydration, ErrorStore } from './ErrorStore'
 import { NoticeHydration, NoticeStore } from './NoticeStore'
 import { ChatStore } from './ChatStore'
+import { VotingHydration, VotingStore } from './VotingStore'
 
 export type HydrationData = {
   error?: ErrorHydration
   notice?: NoticeHydration
   profile?: ProfileHydration
   profiles?: ProfileHydration[]
+  voting?: VotingHydration
+  allVoting?: VotingHydration[]
 }
 
 export class RootStore {
@@ -15,12 +18,14 @@ export class RootStore {
   profileStore: ProfileStore
   noticeStore: NoticeStore
   chatStore: ChatStore
+  votingStore: VotingStore
 
   constructor() {
     this.errorStore = new ErrorStore(this)
     this.profileStore = new ProfileStore(this)
     this.noticeStore = new NoticeStore(this)
     this.chatStore = new ChatStore(this)
+    this.votingStore = new VotingStore(this)
   }
 
   hydrate(data: HydrationData) {
@@ -35,6 +40,12 @@ export class RootStore {
     }
     if (data.notice) {
       this.noticeStore.hydrate(data.notice)
+    }
+    if (data.voting) {
+      this.votingStore.hydrate(data.voting)
+    }
+    if (data.allVoting) {
+      this.votingStore.hydrate(undefined, data.allVoting)
     }
   }
 }

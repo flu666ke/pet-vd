@@ -89,6 +89,11 @@ const API = {
     const { data } = await instance.post('message', body)
 
     return data
+  },
+  async createVoting(body: any) {
+    const { data } = await instance.post('voting', body)
+
+    return data
   }
 }
 

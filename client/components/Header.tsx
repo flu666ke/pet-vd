@@ -68,6 +68,10 @@ const privateMenuLinks = [
   {
     to: '/profile',
     text: 'profile'
+  },
+  {
+    to: '/voting',
+    text: 'voting'
   }
 ];
 

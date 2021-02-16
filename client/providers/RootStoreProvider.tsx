@@ -36,6 +36,11 @@ export function useChatStore() {
   return chatStore;
 }
 
+export function useVotingStore() {
+  const { votingStore } = useRootStore();
+  return votingStore;
+}
+
 export function RootStoreProvider({
   children,
   hydrationData,

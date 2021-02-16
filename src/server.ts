@@ -18,6 +18,8 @@ import ChatController from './controllers/chat'
 import chatRoutes from './routes/chat'
 import socketService from './module.socket/socketService'
 import schedulerService from './module.scheduler/schedulerService'
+import votingRoutes from './routes/voting'
+import VotingController from './controllers/voting'
 
 const startServer = (config: IConfig) => {
   // Core
@@ -68,11 +70,13 @@ const startServer = (config: IConfig) => {
 
     const profileController = new ProfileController(services.errorService, authController)
     const chatController = new ChatController(services.helperService, services.errorService)
+    const votingController = new VotingController(services.helperService, services.errorService)
 
     return {
       authController,
       profileController,
-      chatController
+      chatController,
+      votingController
     }
   })()
 
@@ -81,13 +85,15 @@ const startServer = (config: IConfig) => {
     const auth = authRoutes(core.app, controllers.authController, core.docs)
     const profile = profileRoutes(core.app, controllers.profileController, core.docs)
     const chat = chatRoutes(core.app, controllers.chatController, core.docs)
+    const voting = votingRoutes(core.app, controllers.votingController, core.docs)
 
     core.docs.createSwaggerDocs()
 
     return {
       auth,
       profile,
-      chat
+      chat,
+      voting
     }
   })()
 
